@@ -95,3 +95,89 @@ function mcore_get_signed_qs($url, $query_string, $key_id, $secret_key, $ttl=nul
 	}
 	return $new_qs;
 }
+
+/**
+ * Make a HTTP request to the MediaCore API and return the results.
+ *
+ * This will handle Basic Auth if you provide your credentials, but be aware
+ * MediaCore only allows Basic Auth over HTTPS!
+ *
+ * If you must use HTTP because HTTPS is not supported in your environment,
+ * you should provide your keys so that signed URLs can be generated for you.
+ *
+ * @param string $method Request method (GET, POST, PUT, DELETE).
+ * @param string $url Absolute URL for the API to call.
+ * @param array|null $params Request parameters to include, if any.
+ * @param array|null $credentials Your username and password for basic auth.
+ *     Example: array('username' => 'me', 'password' => 'pw')
+ * @param array|null $keys Your keys, for generating a signed URL.
+ *     Example: array('key_id' => 'Abc123', 'secret_key' => 'Def456')
+ * @param int|null $ttl The number of seconds from now that the URL will be valid.
+ *     We've chosen 30 seconds by default to avoid time sync issues.
+ * @param int|null $expiry_epoch The exact UTC unix epoch that the URL will expire.
+ * @return {Requests_Response} Response object.
+ */
+function mcore_call_api($method, $url, $params, $credentials=null, $keys=null, $ttl=30, $expiry_epoch=null) {
+	$headers = array();
+	$options = array(
+		'useragent' => 'MediaCore PHP Client/1.0',
+	);
+
+	if ($credentials && !empty($credentials['username'])) {
+		$options['auth'] = array($credentials['username'], $credentials['password']);
+	} else if ($keys && !empty($credentials['key_id'])) {
+		// Separate out the query string if there is one embedded in the URL.
+		$query_string_start = strpos($url, '?');
+		if ($query_string_start >= 0) {
+			$query_string = substr($query_string, $query_string_start + 1);
+			$url = substr($url, 0, $query_string_start);
+		} else {
+			$query_string = '';
+		}
+
+		// Manually add the params to query string for GET requests.
+		// Normally Requests does this for us, but we need to sign these params too.
+		if ($method == 'GET' && !empty($params)) {
+			$query_string = ($query_string ? '&' : '?')
+			              . http_build_query($params, null, '&');
+			$params = null;
+		}
+
+		$key_id = $keys['key_id'];
+		$secret_key = $keys['secret_key'];
+		$query_string = mcore_get_signed_qs($url, $query_string, $key_id, $secret_key, $ttl, $expiry_epoch);
+		$url = $url . '?' . $query_string;
+	}
+
+	$response = Requests::request($url, $headers, $params, $method, $options);
+
+	if ($response->status_code >= 500) {
+		throw new Exception('API error occurred ' . $response->status_int);
+	}
+
+	return $response;
+}
+
+/**
+ * Make a HTTP request to the MediaCore API and return decoded JSON result.
+ *
+ * This will handle Basic Auth if you provide your credentials, but be aware
+ * MediaCore only allows Basic Auth over HTTPS!
+ *
+ * If you must use HTTP because HTTPS is not supported in your environment,
+ * you should provide your keys so that signed URLs can be generated for you.
+ *
+ * @param string $method Request method (GET, POST, PUT, DELETE).
+ * @param string $url Absolute URL for the API to call.
+ * @param array|null $params Request parameters to include, if any.
+ * @param array|null $credentials Your username and password for basic auth.
+ *     Example: array('username' => 'me', 'password' => 'pw')
+ * @param array|null $keys Your keys, for generating a signed URL.
+ *     Example: array('key_id' => 'Abc123', 'secret_key' => 'Def456')
+ * @param number $ttl How long the request should be valid for. We've
+ *     chosen 30 seconds to avoid time sync issues.
+ */
+function mcore_call_json_api($method, $url, $params, $credentials=null, $keys=null, $ttl=30) {
+	$response = mcore_call_api($method, $url, $params, $credentials, $keys, $ttl);
+	return json_decode($response->body);
+}
