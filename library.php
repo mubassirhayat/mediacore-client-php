@@ -187,3 +187,67 @@ function mcore_call_json_api($method, $url, $params, $credentials=null, $keys=nu
 	$response = mcore_call_api($method, $url, $params, $credentials, $keys, $ttl);
 	return json_decode($response->body);
 }
+
+/**
+ * Forward the current request to the MediaCore API and return the response.
+ *
+ * You MUST provide a function to authorize that the API call should in fact
+ * be sent. The authorization function will be called with three arguments:
+ *  1) the request method
+ *  2) the API path (such as /api/uploader/media)
+ *  3) an associative array of parameters to include in the request.
+ *
+ * @param string $api_host Your MediaCore hostname. Ex: mysite.mediacore.tv
+ * @param string $auth_func Function name to call to authorize the API call.
+ * @param boolean $use_ssl Whether to enable SSL. Defaults to true.
+ * @param array|null $credentials Your username and password for basic auth.
+ *     Example: array('username' => 'me', 'password' => 'pw')
+ * @param array|null $keys Your keys, for generating a signed URL.
+ *     Example: array('key_id' => 'Abc123', 'secret_key' => 'Def456')
+ * @return null The response is directly output.
+ */
+function mcore_proxy_api_call($api_host, $auth_func, $use_ssl, $credentials=null, $keys=null) {
+	if (empty($auth_func) || !function_exists($auth_func)) {
+		throw new Exception('You MUST provide an authorization function.');
+	}
+
+	if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+		$method = 'GET';
+		$path = $_GET['path'];
+		$payload = !empty($_GET['payload']) ? json_decode($_GET['payload'], true) : null;
+	} else {
+		$method = $_POST['method'];
+		$path = $_POST['path'];
+		$payload = !empty($_POST['payload']) ? json_decode($_POST['payload'], true) : null;
+	}
+
+	if (// No query strings are allowed in the path
+		strpos($path, '?') !== false ||
+		// We will only proxy requests to the API, not the rest of the site
+		strpos($path, '/api/') !== 0 ||
+		// The authorization func must return true
+		!call_user_func($auth_func, $method, $path, $payload)
+	) {
+		header('HTTP/1.0 403 Forbidden', true, 403);
+		echo 'Forbidden';
+		exit();
+	}
+
+	$url = ($use_ssl ? 'https:' : 'http:')
+	     . '//' . $api_host . '/'
+	     . ltrim($path, '/');
+
+	$response = mcore_call_api($method, $url, $payload, $credentials, $keys);
+
+	$raw = $response->raw;
+	$status = substr($raw, 0, strpos($raw, "\n"));
+	$contentType = $response->headers['Content-type'];
+
+	header($status, true, $response->status_code);
+	header('Content-type: ' . $contentType);
+	// TODO: Remove this
+	header('X-Proxied-Url: ' . $url);
+	header('X-Proxied-Method: ' . $method);
+	header('X-Proxied-Payload: ' . $_POST['payload']);
+	echo $response->body;
+};
