@@ -118,6 +118,12 @@ function mcore_get_signed_qs($url, $query_string, $key_id, $secret_key, $ttl=nul
  * @return {Requests_Response} Response object.
  */
 function mcore_call_api($method, $url, $params, $credentials=null, $keys=null, $ttl=30, $expiry_epoch=null) {
+	// Lazy-load Requests
+	if (!class_exists('Requests', false)) {
+		require_once dirname(__FILE__) . '/deps/Requests.php';
+		Requests::register_autoloader();
+	}
+
 	$headers = array();
 	$options = array(
 		'useragent' => 'MediaCore PHP Client/1.0',
