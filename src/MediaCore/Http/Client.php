@@ -2,7 +2,7 @@
 /**
  *
  * @category    MediaCore
- * @package     Client
+ * @package     Http\Adapter\Curl
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
  * @version     Release:

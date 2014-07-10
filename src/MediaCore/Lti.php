@@ -2,7 +2,7 @@
 /**
  *
  * @category   MediaCore
- * @package    MediaCore_Client
+ * @package    Lti
  * @subpackage
  * @copyright  Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
