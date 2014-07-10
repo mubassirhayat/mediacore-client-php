@@ -94,7 +94,7 @@ class Client
      * @param array $headers
      * @return string|boolean
      */
-    private function send($url, $method='GET', $data=null,
+    private function send($url, $method, $data=null,
             $options=array(), $headers=array()) {
 
         return $this->adapter->send($url, $method, $data,

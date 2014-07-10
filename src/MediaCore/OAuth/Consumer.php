@@ -12,14 +12,29 @@
 namespace MediaCore\OAuth;
 
 /**
+ * A basic consumer
  */
 class Consumer
 {
+    /**
+     * The consumer key
+     *
+     * @type string
+     */
     public $key;
+
+    /**
+     * The consumer secret
+     *
+     * @type string
+     */
     public $secret;
 
     /**
-     * TODO implement callback url
+     * Constructor
+     *
+     * @param string $key
+     * @param string $secret
      */
     function __construct($key, $secret)
     {
@@ -27,16 +42,23 @@ class Consumer
         $this->secret = $secret;
     }
 
+    /**
+     * Get the consumer key
+     *
+     * @return string
+     */
     function getKey()
     {
         return $this->key;
     }
 
+    /**
+     * Get the consumer secret
+     *
+     * @return string
+     */
     function getSecret()
     {
         return $this->secret;
     }
 }
-
-
-

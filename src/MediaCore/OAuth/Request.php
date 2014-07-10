@@ -64,11 +64,17 @@ class Request
     public function __construct($consumer, $url, $method, $params)
     {
         $this->consumer = $consumer;
-        $this->uri = UriFactory::factory($url);
-        $this->method = strtoupper($method);
-        $this->params = array_replace($this->getDefaults(), $params);
+        $this->method = $method;
 
-        // TODO parse the url for extra params?
+        $this->uri = UriFactory::factory($url);
+        // strip off the url query parameters
+        $queryParams = $this->uri->getQueryAsArray();
+        $this->uri = $this->normalizeUri($this->uri);
+        $this->params = array_replace(
+            $this->getOAuthParams(),
+            $params,
+            $queryParams
+        );
     }
 
     /**
@@ -80,9 +86,17 @@ class Request
     public function signRequest($signatureMethod)
     {
         $this->params['oauth_signature_method'] = $signatureMethod->getName();
-        $this->params['oauth_signature'] =  $signatureMethod->buildSignature(
+        $url = $this->uri->toString();
+        $queryStr = http_build_query(
+            $this->params,
+            $enc_type=PHP_QUERY_RFC3986
+        );
+        $url = (strpos($url, '?') === false)
+            ? $url .= '?' . $queryStr
+            : $url .= '&' . $queryStr;
+        $url .= '&oauth_signature=' . $signatureMethod->buildSignature(
             $this->consumer, $this->getBaseString());
-        return $this->params;
+        return $url;
     }
 
     /**
@@ -96,7 +110,7 @@ class Request
     }
 
     /**
-     * Get the params
+     * Get the parameters
      *
      * @return array
      */
@@ -112,31 +126,92 @@ class Request
      * @return string
      */
     public function getBaseString() {
-
-        // get the url parts (scheme://host:port/path)
-        $scheme = strtolower($this->uri->getScheme());
-        $port = $this->uri->getPort();
-        $host = $this->uri->getHost();
-        $path = $this->uri->getPath();
-
-        // build the base url (scheme://host:port)
-        if (($scheme == 'http' && $port != '80') ||
-            ($scheme == 'https' && $port != '443')) {
-            $host = "$host:$port";
-        }
-        $baseUrl = "$scheme://$host";
-        if (!empty($path)) {
-            $baseUrl .= "/$path";
+        // remove the oauth_signature if it exists
+        // in the params array
+        if (isset($this->params['oauth_signature'])) {
+            unset($this->params['oauth_signature']);
         }
         // build the percent encoded base string
-        // http://tools.ietf.org/html/rfc3986#section-2.1
-        $queryStr = strtoupper($this->method) . '&';
-        $queryStr .= rawurlencode($baseUrl) . '&';
-        $queryStr .= http_build_query(
-            $this->params,
-            $enc_type=PHP_QUERY_RFC3986
+        $baseStrings = array();
+        $baseStrings[] = strtoupper($this->method);
+
+        // The url has been normalized at this stage
+        $baseStrings[] = rawurlencode($this->uri->toString());
+        $encodedParams = $this->rawurlencodeKeyValuePairs($this->params);
+        $baseStrings[] = rawurlencode(
+            $this->toByteOrderedValueQueryString($encodedParams)
         );
+        $queryStr = implode('&', $baseStrings);
+        //var_dump($queryStr); die;
         return $queryStr;
+    }
+
+    /**
+     * Percent encode an associative array of parameters
+     *
+     * @param array $params
+     * @return array
+     */
+    private function rawurlencodeKeyValuePairs($params)
+    {
+        $encodedParams = array();
+        foreach ($this->params as $key => $value) {
+            $encodedParams[rawurlencode($key)] =
+                rawurlencode($value);
+        }
+        return $encodedParams;
+    }
+
+    /**
+     * Normalize the base url
+     * Remove any query parameters in the url and
+     * return just its scheme://host:port/path
+     * TODO Should we add any query parameters on the
+     *  url to the encoded params?
+     * Borrowed from ZF1.12:
+     * @link Zend_Oauth_Signature_SignatureAbstract
+     *
+     * @return string
+     */
+    private function normalizeUri($uri)
+    {
+        if ($uri->getScheme() == 'http' && $uri->getPort() == '80') {
+            $uri->setPort('');
+        } elseif ($uri->getScheme() == 'https' && $uri->getPort() == '443') {
+            $uri->setPort('');
+        }
+        $uri->setQuery('');
+        $uri->setFragment('');
+        $uri->setHost(strtolower($uri->getHost()));
+        return $uri;
+    }
+
+    /**
+     * Sort the encoded parameters by a "natural order"
+     * algorithm (lexicographical byte value ordering).
+     * http://oauth.net/core/1.0/ (Section 9.1.1)
+     * Borrowed from ZF1.12:
+     * @link Zend_Oauth_Signature_SignatureAbstract
+     *
+     * @param array $params
+     * @return string
+     */
+    private function toByteOrderedValueQueryString($params)
+    {
+        uksort($params, 'strnatcmp');
+
+        $pairs = array();
+        foreach ($params as $key=>$value) {
+            if (is_array($value)) {
+                natsort($value);
+                foreach ($value as $keyduplicate) {
+                    $pairs[] = $key . '=' . $keyduplicate;
+                }
+            } else {
+                $pairs[] = $key . '=' . $value;
+            }
+        }
+        return implode('&', $pairs);
     }
 
     /**
@@ -144,12 +219,12 @@ class Request
      *
      * @return array
      */
-    private function getDefaults() {
+    private function getOAuthParams() {
         return array(
             'oauth_version' => self::OAUTH_VERSION,
             'oauth_nonce' => $this->generateNonce(),
             'oauth_timestamp' => $this->generateTimestamp(),
-            'oauth_consumer_key' => $this->consumer->key,
+            'oauth_consumer_key' => $this->consumer->getKey(),
         );
     }
 

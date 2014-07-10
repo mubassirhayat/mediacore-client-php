@@ -85,7 +85,7 @@ class Lti
      * @param string $key
      * @param string $secret
      */
-    public function buildRequest($params, $url, $method='GET', $key, $secret)
+    public function buildRequestUrl($params, $url, $method='GET', $key, $secret)
     {
         $this->params = $params;
         $this->url = $url;
@@ -99,8 +99,6 @@ class Lti
         );
         return $this->request->signRequest($this->signatureMethod);
     }
-
-
 
     /**
      * Get the LTI version

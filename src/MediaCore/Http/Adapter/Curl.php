@@ -20,11 +20,7 @@ class Curl implements AdapterInterface
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => 4,
         CURLOPT_POST => false,
-        CURLOPT_SSL_VERIFYHOST => false,//TODO remove
-        CURLOPT_SSL_VERIFYPEER => false,//TODO remove
     );
-
-    const ENC_URLENCODED = 'application/x-www-form-urlencoded'; //TODO
 
     /**
      * Constructor
@@ -46,7 +42,9 @@ class Curl implements AdapterInterface
     public function send($url, $method='GET', $data=null,
             $options=array(), $headers=array()) {
 
-        $options = array_replace($this->defaults, $options);
+        if (isset($options)) {
+            $options = array_replace($this->defaults, (array)$options);
+        }
 
         // Add the CURLOPT_URL
         // NOTE: Disallow passing the url via the $options arg
@@ -60,14 +58,14 @@ class Curl implements AdapterInterface
             if (is_string($data)) {
                 $options[CURLOPT_POSTFIELDS] = $data;
             } else if (is_array($data)) {
-                $options[CURLOPT_POSTFIELDS] = implode('&', $data);
+                $options[CURLOPT_POSTFIELDS] = json_encode($data);
             }
         }
 
         // Build the curl headers
         // NOTE: Disallow passing headers via the $options arg
         unset($options[CURLOPT_HTTPHEADER]);
-        if (!empty($headers)) {
+        if (isset($headers)) {
             $options[CURLOPT_HTTPHEADER] = (array)$headers;
         }
 
