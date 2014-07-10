@@ -17,11 +17,16 @@ class LtiTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->url = 'https://fakeurl.com';
+        $this->url = 'http://localhost:8080/chooser';
         $this->getMethod = 'GET';
         $this->postMethod = 'POST';
-        $this->key = 'myKey';
-        $this->secret = 'mySecret';
+        $this->key = 'moodleKey';
+        $this->secret = 'secret';
+        $this->oauthParams = array(
+            'oauth_version' => '1.0',
+            'oauth_nonce' => 'd41d8cd98f00b204e9800998ecf8427e',
+            'oauth_timestamp' => '1405011060',
+        );
 
         $this->lti = new Lti;
     }
@@ -36,13 +41,13 @@ class LtiTest extends \PHPUnit_Framework_TestCase
         $this->key = null;
         $this->secret = null;
         $this->lti = null;
+        $this->oauthParams = null;
     }
 
     /**
-     * @covers MediaCore\Lti::buildRequest
-     * TODO
+     * @covers MediaCore\Lti::buildRequestUrl
      */
-    public function testBuildRequest()
+    public function testBuildRequestUrl()
     {
         $params = array(
             'context_id' => '0001',
@@ -60,9 +65,31 @@ class LtiTest extends \PHPUnit_Framework_TestCase
             'tool_consumer_info_version' => '1.0',
             'user_id' => 101,
         );
-
-        $signedRequest = $this->lti->buildRequest($params, $this->url,
+        $params = array_merge($params, $this->oauthParams);
+        $signedRequestUrl = $this->lti->buildRequestUrl($params, $this->url,
             $this->getMethod, $this->key, $this->secret);
 
+        $expectedValue = 'http://localhost:8080/chooser?oauth_version=1.0&'
+            . 'oauth_nonce=d41d8cd98f00b204e9800998ecf8427e&'
+            . 'oauth_timestamp=1405011060&oauth_consumer_key=moodleKey&'
+            . 'context_id=0001&context_label=test_course_label&'
+            . 'context_title=test_course_title&ext_lms=moodle-2&'
+            . 'lis_person_name_family=test_user&lis_person_name_full=test_name_full&'
+            . 'lis_person_name_given=test_name_given&lis_person_contact_email_primary='
+            . 'test_email&lti_message_type=basic-lti-launch-request&lti_version='
+            . 'LTI-1p0&roles=Instructor&tool_consumer_info_product_family_code=moodle&'
+            . 'tool_consumer_info_version=1.0&user_id=101&oauth_signature_method=HMAC-SHA1&'
+            . 'oauth_signature=V9KWT633Mbjdo7RdD0owzbuVVhA=';
+
+        $this->assertEquals($expectedValue, $signedRequestUrl);
+    }
+
+    /**
+     * @covers MediaCore\Lti::getVersion
+     */
+    public function testGetVersion()
+    {
+        $expectedValue = 'LTI-1p0';
+        $this->assertEquals($expectedValue, $this->lti->getVersion());
     }
 }

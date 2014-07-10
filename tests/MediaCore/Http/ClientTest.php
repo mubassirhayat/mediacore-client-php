@@ -7,16 +7,13 @@ use MediaCore\Http\Adapter\Curl;
  */
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var Consumer
-     */
     protected $client;
 
     /**
      */
     protected function setUp()
     {
-        $this->url = 'http://localhost:8080';
+        $this->url = 'http://training.mediacore.tv';
         $this->client = new Client($this->url);
     }
 
@@ -27,15 +24,21 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers MediaCore\Http\Client::apiUrl
      */
     public function testApiUrl()
     {
         $apiUrl = $this->client->apiUrl('api2', 'media');
         $expectedValue = $this->url . '/api2/media';
         $this->assertEquals($expectedValue, $apiUrl);
+
+        $apiUrl = $this->client->apiUrl('api2', 'media', 'get');
+        $expectedValue = $this->url . '/api2/media/get';
+        $this->assertEquals($expectedValue, $apiUrl);
     }
 
     /**
+     * @covers MediaCore\Http\Client::getQuery
      */
     public function testGetQuery()
     {
@@ -48,15 +51,17 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers MediaCore\Http\Client::get
      */
     public function testGet()
     {
-
-    }
-
-    /**
-     */
-    public function testPost()
-    {
+        $queryParams = array(
+            'joins' => 'files',
+        );
+        $queryStr = $this->client->get($this->client->getQuery($queryParams));
+        $url = $this->client->apiUrl('api2', 'media') . '?' . $queryStr;
+        $result = $this->client->get($url);
+        $obj = json_decode($result);
+        $this->assertObjectHasAttribute('items', (object)$obj);
     }
 }

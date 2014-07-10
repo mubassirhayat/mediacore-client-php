@@ -29,6 +29,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers MediaCore\OAuth\Request::getKey
      */
     public function testKey()
     {
@@ -36,6 +37,7 @@ class ConsumerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers MediaCore\OAuth\Consumer::getSecret
      */
     public function testSecret()
     {

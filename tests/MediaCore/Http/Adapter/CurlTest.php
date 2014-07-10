@@ -5,9 +5,6 @@ namespace MediaCore\Http\Adapter;
  */
 class CurlTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var
-     */
     protected $curl;
 
     /**
