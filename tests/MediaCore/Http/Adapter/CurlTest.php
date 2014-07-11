@@ -34,7 +34,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
      */
     public function testSendSuccess()
     {
-        $url = 'http://localhost:8080/api2/media';
+        $url = 'http://training.mediacore.tv/api2/media';
         $result = $this->curl->send($url, 'GET');
         $this->assertObjectHasAttribute('items', json_decode($result));
     }
