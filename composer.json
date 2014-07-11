@@ -1,8 +1,8 @@
 {
-	"name": "MediaCore",
-	"description": "",
+	"name": "MediaCore PHP Libraries",
+	"description": "A set of OAuth, LTI, and Client libraries to interface with MediaCore",
 	"keywords": ["mediacore"],
-	"homepage": "http://developers.mediacore.com",
+	"homepage": "https://github.com/mediacore/mediacore-client-php",
 	"license": "",
 	"repositories": [
 		{
