@@ -46,7 +46,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             'one' => 'firstvalue',
             'two' => 'secondcvlue',
         );
-        $expectedValue = http_build_query($queryParams, $enc_type=PHP_QUERY_RFC3986);
+        $queryStr = http_build_query($queryParams);
+        $expectedValue = str_replace('+', '%20', $queryStr);
         $this->assertEquals($expectedValue, $this->client->getQuery($queryParams));
     }
 

@@ -88,10 +88,8 @@ class Request
     {
         $this->params['oauth_signature_method'] = $signatureMethod->getName();
         $url = $this->uri->toString();
-        $queryStr = http_build_query(
-            $this->params,
-            $enc_type=PHP_QUERY_RFC3986
-        );
+        $queryStr = http_build_query($this->params);
+        $queryStr = str_replace('+', '%20', $queryStr);
         $url = (strpos($url, '?') === false)
             ? $url .= '?' . $queryStr
             : $url .= '&' . $queryStr;
