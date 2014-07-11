@@ -13,9 +13,9 @@
 
 namespace MediaCore;
 
-require('Oauth/Consumer.php');
-require('Oauth/Request.php');
-require('Oauth/SignatureMethod/HMAC_SHA1.php');
+require('OAuth/Consumer.php');
+require('OAuth/Request.php');
+require('OAuth/SignatureMethod/HMAC_SHA1.php');
 
 use MediaCore\OAuth\SignatureMethod\HMAC_SHA1;
 use MediaCore\OAuth\Consumer;

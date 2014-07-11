@@ -21,7 +21,7 @@ class Request
     /**
      * The consumer
      *
-     * @var null|Oauth\Consumer
+     * @var null|OAuth\Consumer
      */
     private $consumer;
 
@@ -56,7 +56,7 @@ class Request
     /**
      * Constructor
      *
-     * @param Oauth\Consumer $consumer
+     * @param OAuth\Consumer $consumer
      * @param string $url
      * @param string $method
      * @param array $params
@@ -80,7 +80,7 @@ class Request
     /**
      * Create the oauth signature method and signature string
      *
-     * @param SignatureMethod_HMAC_SHA1
+     * @param MediaCore\OAuth\SignatureMethod\HMAC_SHA1 $signatureMethod
      * @return array
      */
     public function signRequest($signatureMethod)
@@ -142,7 +142,6 @@ class Request
             $this->toByteOrderedValueQueryString($encodedParams)
         );
         $queryStr = implode('&', $baseStrings);
-        //var_dump($queryStr); die;
         return $queryStr;
     }
 
@@ -166,12 +165,11 @@ class Request
      * Normalize the base url
      * Remove any query parameters in the url and
      * return just its scheme://host:port/path
-     * TODO Should we add any query parameters on the
-     *  url to the encoded params?
      * Borrowed from ZF1.12:
-     * @link Zend_Oauth_Signature_SignatureAbstract
+     * @link Zend_OAuth_Signature_SignatureAbstract
      *
-     * @return string
+     * @param Zend\Uri\Uri $uri
+     * @return Zend\Uri\Uri
      */
     private function normalizeUri($uri)
     {
@@ -191,7 +189,7 @@ class Request
      * algorithm (lexicographical byte value ordering).
      * http://oauth.net/core/1.0/ (Section 9.1.1)
      * Borrowed from ZF1.12:
-     * @link Zend_Oauth_Signature_SignatureAbstract
+     * @link Zend_OAuth_Signature_SignatureAbstract
      *
      * @param array $params
      * @return string

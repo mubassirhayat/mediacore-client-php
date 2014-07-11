@@ -9,7 +9,7 @@
  * @link
  */
 
-namespace MediaCore\Oauth\SignatureMethod;
+namespace MediaCore\OAuth\SignatureMethod;
 
 use MediaCore\OAuth\Consumer;
 

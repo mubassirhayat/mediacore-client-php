@@ -19,6 +19,8 @@ class Client
     private $url;
 
     /**
+     * Constructor
+     * @param string $url
      */
     public function __construct($url)
     {
