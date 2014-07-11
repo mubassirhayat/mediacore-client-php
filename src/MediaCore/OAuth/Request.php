@@ -15,7 +15,7 @@ use Zend\Uri\UriFactory;
 
 
 /**
- * An OAuth Request
+ * OAuth Request
  */
 class Request
 {

@@ -16,11 +16,16 @@ use MediaCore\Http\Adapter\Curl as CurlAdapter;
 class Client
 {
     /**
+     * The base url
+     *
      * @type string
      */
     private $url;
 
     /**
+     * A Curl Adapter that will handle
+     * requests to the url endpoints
+     *
      * @type CurlAdapter
      */
     private $adapter;

@@ -18,6 +18,11 @@ use MediaCore\Http\Adapter\AdapterInterface;
  */
 class Curl implements AdapterInterface
 {
+    /**
+     * Default CURL_OPTS
+     *
+     * @type array
+     */
     private $defaults = array(
         CURLOPT_HEADER => false,
         CURLOPT_RETURNTRANSFER => true,

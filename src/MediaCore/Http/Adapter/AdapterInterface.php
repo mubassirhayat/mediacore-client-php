@@ -11,6 +11,9 @@
 
 namespace MediaCore\Http\Adapter;
 
+/**
+ * Adapter Interface
+ */
 interface AdapterInterface
 {
     /**
