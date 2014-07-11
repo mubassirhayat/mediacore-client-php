@@ -2,10 +2,11 @@
 /**
  * @category    MediaCore
  * @package     OAuth
+ * @subpackage
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
  * @version     Release:
- * @link        http://developers.mediacore.com
+ * @link        https://github.com/mediacore/mediacore-client-php
  */
 
 namespace MediaCore\OAuth;

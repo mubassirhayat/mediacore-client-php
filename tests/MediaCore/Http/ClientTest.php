@@ -24,17 +24,17 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers MediaCore\Http\Client::apiUrl
+     * @covers MediaCore\Http\Client::getUrl
      */
     public function testApiUrl()
     {
-        $apiUrl = $this->client->apiUrl('api2', 'media');
+        $getUrl = $this->client->getUrl('api2', 'media');
         $expectedValue = $this->url . '/api2/media';
-        $this->assertEquals($expectedValue, $apiUrl);
+        $this->assertEquals($expectedValue, $getUrl);
 
-        $apiUrl = $this->client->apiUrl('api2', 'media', 'get');
+        $getUrl = $this->client->getUrl('api2', 'media', 'get');
         $expectedValue = $this->url . '/api2/media/get';
-        $this->assertEquals($expectedValue, $apiUrl);
+        $this->assertEquals($expectedValue, $getUrl);
     }
 
     /**
@@ -59,7 +59,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             'joins' => 'files',
         );
         $queryStr = $this->client->get($this->client->getQuery($queryParams));
-        $url = $this->client->apiUrl('api2', 'media') . '?' . $queryStr;
+        $url = $this->client->getUrl('api2', 'media') . '?' . $queryStr;
         $result = $this->client->get($url);
         $obj = json_decode($result);
         $this->assertObjectHasAttribute('items', (object)$obj);

@@ -1,12 +1,12 @@
 <?php
 /**
- *
  * @category    MediaCore
- * @package     Http\Adapter\Curl
+ * @package     Http
+ * @subpackage
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
  * @version     Release:
- * @link
+ * @link        https://github.com/mediacore/mediacore-client-php
  */
 
 namespace MediaCore\Http;
@@ -15,8 +15,15 @@ use MediaCore\Http\Adapter\Curl as CurlAdapter;
 
 class Client
 {
-    private $adapter;
+    /**
+     * @type string
+     */
     private $url;
+
+    /**
+     * @type CurlAdapter
+     */
+    private $adapter;
 
     /**
      * Constructor
@@ -35,7 +42,7 @@ class Client
      * @param string ...
      * @return string
      */
-    public function apiUrl()
+    public function getUrl()
     {
         $args = func_get_args();
         $url = $this->url;

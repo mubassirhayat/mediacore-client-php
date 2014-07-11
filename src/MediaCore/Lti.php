@@ -1,14 +1,13 @@
 <?php
 /**
  *
- * @category   MediaCore
- * @package    Lti
+ * @category    MediaCore
+ * @package     Lti
  * @subpackage
- * @copyright  Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
- * @version    Release:
- * @link
- * @since
+ * @version     Release:
+ * @link        https://github.com/mediacore/mediacore-client-php
  */
 
 namespace MediaCore;

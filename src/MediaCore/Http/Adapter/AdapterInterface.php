@@ -1,12 +1,12 @@
 <?php
 /**
- *
  * @category    MediaCore
  * @package     Http\Adapter
+ * @subpackage
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
  * @version     Release:
- * @link
+ * @link        https://github.com/mediacore/mediacore-client-php
  */
 
 namespace MediaCore\Http\Adapter;
