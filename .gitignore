@@ -2,10 +2,13 @@
 composer.lock
 composer.phar
 vendor
- 
+
 # OS #
 .DS_Store
 .*.swp
 .swp
 .direnv/*
 .envrc
+
+# Documentation #
+docs/
