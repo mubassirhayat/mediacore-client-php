@@ -1,21 +1,18 @@
 <?php
+namespace MediaCore\OAuth;
+use Zend\Uri\UriFactory;
+
+
 /**
+ * An Oauth Request
+ *
  * @category    MediaCore
- * @package     OAuth
+ * @package     MediaCore\OAuth\Request
  * @subpackage
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
- */
-
-namespace MediaCore\OAuth;
-
-use Zend\Uri\UriFactory;
-
-
-/**
- * OAuth Request
  */
 class Request
 {

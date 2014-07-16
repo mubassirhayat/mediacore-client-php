@@ -1,20 +1,17 @@
 <?php
+namespace MediaCore\Http\Adapter;
+use MediaCore\Http\Adapter\AdapterInterface;
+
+
 /**
+ * A Curl Adapter
+ *
  * @category    MediaCore
- * @package     Http\Adapter
- * @subpackage
+ * @package     MediaCore\Http\Adapter\Curl
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
- */
-
-namespace MediaCore\Http\Adapter;
-
-use MediaCore\Http\Adapter\AdapterInterface;
-
-/**
- *
  */
 class Curl implements AdapterInterface
 {

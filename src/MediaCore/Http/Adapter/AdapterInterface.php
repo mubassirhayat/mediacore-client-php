@@ -1,18 +1,16 @@
 <?php
+namespace MediaCore\Http\Adapter;
+
+
 /**
+ * The http adapter interface
+ *
  * @category    MediaCore
- * @package     Http\Adapter
- * @subpackage
+ * @package     MediaCore\Http\Adapter\AdapterInterface
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
- */
-
-namespace MediaCore\Http\Adapter;
-
-/**
- * Adapter Interface
  */
 interface AdapterInterface
 {

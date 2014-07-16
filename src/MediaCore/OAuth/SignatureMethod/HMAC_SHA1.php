@@ -1,23 +1,20 @@
 <?php
+namespace MediaCore\OAuth\SignatureMethod;
+use MediaCore\OAuth\Consumer;
+use MediaCore\OAuth\SignatureMethod\SignatureMethodInterface;
+
+
 /**
+ * A Signature Method that uses HMAC_SHA1 to encode a OAuth request base string
+ * and a signing key.
+ *
  * @category    MediaCore
- * @package     OAuth\SignatureMethod
+ * @package     MediaCore\OAuth\SignatureMethod\HMAC_SHA1
  * @subpackage
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
- */
-
-namespace MediaCore\OAuth\SignatureMethod;
-
-use MediaCore\OAuth\Consumer;
-use MediaCore\OAuth\SignatureMethod\SignatureMethodInterface;
-
-/**
- * A Signature Method that uses HMAC_SHA1
- * to encode a OAuth request base string
- * and a signing key.
  */
 class HMAC_SHA1 implements SignatureMethodInterface
 {

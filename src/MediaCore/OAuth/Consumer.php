@@ -1,19 +1,16 @@
 <?php
+namespace MediaCore\OAuth;
+
+
 /**
+ * A basic oauth consumer
  *
  * @category    MediaCore
- * @package     OAuth
- * @subpackage
+ * @package     MediaCore\OAuth\Consumer
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
- */
-
-namespace MediaCore\OAuth;
-
-/**
- * A basic consumer
  */
 class Consumer
 {

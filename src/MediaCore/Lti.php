@@ -1,27 +1,20 @@
 <?php
-/**
- *
- * @category    MediaCore
- * @package     Lti
- * @subpackage
- * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
- * @license
- * @version     Release:
- * @link        https://github.com/mediacore/mediacore-client-php
- */
-
 namespace MediaCore;
-
-require('OAuth/Consumer.php');
-require('OAuth/Request.php');
-require('OAuth/SignatureMethod/HMAC_SHA1.php');
-
 use MediaCore\OAuth\SignatureMethod\HMAC_SHA1;
 use MediaCore\OAuth\Consumer;
 use MediaCore\OAuth\Request;
 
 
 /**
+ * A basic LTI request builder
+ *
+ * @category    MediaCore
+ * @package     MediaCore\Lti
+ * @subpackage
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @license
+ * @version     Release:
+ * @link        https://github.com/mediacore/mediacore-client-php
  */
 class Lti
 {

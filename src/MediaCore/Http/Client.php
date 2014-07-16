@@ -1,18 +1,19 @@
 <?php
+namespace MediaCore\Http;
+use MediaCore\Http\Adapter\Curl as CurlAdapter;
+
+
 /**
+ * HTTP Client
+ *
  * @category    MediaCore
- * @package     Http
+ * @package     MediaCore\Http\Client
  * @subpackage
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
  */
-
-namespace MediaCore\Http;
-
-use MediaCore\Http\Adapter\Curl as CurlAdapter;
-
 class Client
 {
     /**
