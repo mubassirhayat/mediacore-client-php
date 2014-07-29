@@ -44,7 +44,7 @@ class Client
 
     /**
      * Get a constructed path from supplied
-     * path segments
+     * path segments without slashes
      *
      * @param string ...
      * @return string

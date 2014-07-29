@@ -135,12 +135,10 @@ class Lti
      */
     public function buildRequestUrl($params, $endpoint='', $method='GET')
     {
-        $this->request = new Request(
-            $this->consumer,
-            $this->client->getUrl($endpoint),
-            $method,
-            $params
-        );
+        $args = explode('/', trim($endpoint, '/'));
+        $url = call_user_func_array(array($this->client, 'getUrl'), $args);
+        $this->request = new Request($this->consumer, $url, $method, $params);
+
         return $this->request->signRequest($this->signatureMethod);
     }
 
