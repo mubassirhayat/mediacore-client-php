@@ -16,7 +16,8 @@
 	},
 	"require-dev": {
 		"phpunit/phpunit": ">=4.1",
-		"phpdocumentor/phpdocumentor": "2.*"
+		"phpdocumentor/phpdocumentor": "2.*",
+		"psy/psysh": "~0.1"
 	},
 	"autoload": {
 		"classmap": [
