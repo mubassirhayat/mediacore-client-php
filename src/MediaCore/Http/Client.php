@@ -52,7 +52,7 @@ class Client
     public function getUrl()
     {
         $args = func_get_args();
-        $url = $this->url;
+        $url = $this->baseUrl;
         if (is_array($args) && !empty($args)) {
             $url .= '/' . implode('/', $args);
         }

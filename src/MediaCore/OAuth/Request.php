@@ -28,7 +28,7 @@ class Request
      *
      * @var null|Zend\Uri\Uri
      */
-    private $uri;
+    private $baseUri;
 
     /**
      * The request method
@@ -64,10 +64,13 @@ class Request
         $this->consumer = $consumer;
         $this->method = $method;
 
-        $this->uri = UriFactory::factory($url);
-        // strip off the url query parameters
-        $queryParams = $this->uri->getQueryAsArray();
-        $this->uri = $this->normalizeUri($this->uri);
+        // NOTE: strip off the url query parameters and store
+        // them separately.
+        // Query params in the url supercede those passed
+        // in as args
+        $this->baseUri = UriFactory::factory($url);
+        $this->baseUri = $this->normalizeUri($this->baseUri);
+        $queryParams = $this->baseUri->getQueryAsArray();
         $this->params = array_replace(
             $this->getOAuthParams(),
             $params,
@@ -84,14 +87,15 @@ class Request
     public function signRequest($signatureMethod)
     {
         $this->params['oauth_signature_method'] = $signatureMethod->getName();
-        $url = $this->uri->toString();
-        $queryStr = http_build_query($this->params);
-        $queryStr = str_replace('+', '%20', $queryStr);
-        $url = (strpos($url, '?') === false)
-            ? $url .= '?' . $queryStr
-            : $url .= '&' . $queryStr;
-        $url .= '&oauth_signature=' . $signatureMethod->buildSignature(
+        $uri = clone $this->baseUri;
+        $uri->setQuery($this->params);
+
+        // Add the oauth_signature after setting the query params so its
+        // value isn't url encoded
+        $this->params['oauth_signature'] = $signatureMethod->buildSignature(
             $this->consumer, $this->getBaseString());
+        $url = $uri->toString() . '&oauth_signature=' . $this->params['oauth_signature'];
+
         return $url;
     }
 
@@ -103,6 +107,16 @@ class Request
     public function getOAuthVersion()
     {
         return self::OAUTH_VERSION;
+    }
+
+    /**
+     * Get the uri
+     *
+     * @return Zend\Uri\Uri
+     */
+    public function getBaseUri()
+    {
+        return $this->baseUri;
     }
 
     /**
@@ -132,7 +146,7 @@ class Request
         $baseStrings[] = strtoupper($this->method);
 
         // The url has been normalized at this stage
-        $baseStrings[] = rawurlencode($this->uri->toString());
+        $baseStrings[] = rawurlencode($this->baseUri->toString());
         $encodedParams = $this->rawurlencodeKeyValuePairs($this->params);
         $baseStrings[] = rawurlencode(
             $this->toByteOrderedValueQueryString($encodedParams)
