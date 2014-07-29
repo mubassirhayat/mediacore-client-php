@@ -70,7 +70,7 @@ class LtiTest extends \PHPUnit_Framework_TestCase
 
         $expectedValue = 'http://localhost:8080/chooser?oauth_version=1.0&'
             . 'oauth_nonce=d41d8cd98f00b204e9800998ecf8427e&'
-            . 'oauth_timestamp=1405011060&oauth_consumer_key=moodlekey&'
+            . 'oauth_timestamp=1405011060&oauth_consumer_key=mykey&'
             . 'context_id=0001&context_label=test_course_label&'
             . 'context_title=test_course_title&ext_lms=moodle-2&'
             . 'lis_person_name_family=test_user&lis_person_name_full=test_name_full&'
@@ -78,7 +78,7 @@ class LtiTest extends \PHPUnit_Framework_TestCase
             . 'test_email&lti_message_type=basic-lti-launch-request&lti_version='
             . 'LTI-1p0&roles=Instructor&tool_consumer_info_product_family_code=moodle&'
             . 'tool_consumer_info_version=1.0&user_id=101&oauth_signature_method=HMAC-SHA1&'
-            . 'oauth_signature=/bJ6YT1ON+QbLtC56OCk7Er2IMw=';
+            . 'oauth_signature=xZl1ayFQC9wSAADeZQyt5olddVc=';
 
         $this->assertEquals($expectedValue, $signedRequestUrl);
     }
