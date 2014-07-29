@@ -13,8 +13,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->url = 'http://training.mediacore.tv';
-        $this->client = new Client($this->url);
+        $this->baseUrl = 'http://training.mediacore.tv';
+        $adapter = new Curl();
+        $this->client = new Client($this->baseUrl, $adapter);
     }
 
     /**
@@ -29,11 +30,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testApiUrl()
     {
         $getUrl = $this->client->getUrl('api2', 'media');
-        $expectedValue = $this->url . '/api2/media';
+        $expectedValue = $this->baseUrl . '/api2/media';
         $this->assertEquals($expectedValue, $getUrl);
 
         $getUrl = $this->client->getUrl('api2', 'media', 'get');
-        $expectedValue = $this->url . '/api2/media/get';
+        $expectedValue = $this->baseUrl . '/api2/media/get';
         $this->assertEquals($expectedValue, $getUrl);
     }
 

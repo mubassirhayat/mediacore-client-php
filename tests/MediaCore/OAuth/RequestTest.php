@@ -89,7 +89,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->request = new Request($this->consumer, $this->url, $this->method,
             $this->oauthParams);
         $signedRequestUrl = $this->request->signRequest($this->signatureMethod, $this->consumer);
-        $expectedValue = 'https://fakeurl.com?oauth_version=1.0&oauth_nonce='
+        $expectedValue = 'https://fakeurl.com/?oauth_version=1.0&oauth_nonce='
             . 'd41d8cd98f00b204e9800998ecf8427e&oauth_timestamp=1405011060&'
             . 'oauth_consumer_key=myKey&oauth_signature_method=HMAC-SHA1&'
             . 'oauth_signature=KTUuSmPNLba77/p52pg5tFxLWWk=';
