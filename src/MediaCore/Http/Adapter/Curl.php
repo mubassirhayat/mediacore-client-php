@@ -61,9 +61,9 @@ class Curl implements AdapterInterface
         if (strtoupper($method) == 'POST' && isset($data)) {
             $options[CURLOPT_POST] = true;
             if (is_string($data)) {
-                $options[CURLOPT_POSTFIELDS] = $data;
+                $options[CURLOPT_POSTFIELDS] = explode('&', $data);
             } else if (is_array($data)) {
-                $options[CURLOPT_POSTFIELDS] = json_encode($data);
+                $options[CURLOPT_POSTFIELDS] = $data;
             } else {
                 throw new InvalidArgumentException('"data" must be a string or an array');
             }
