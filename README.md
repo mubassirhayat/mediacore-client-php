@@ -27,8 +27,14 @@ require_once('vendor/autoload.php');
 
 ``` php
 require_once('vendor/autoload.php');
-$lti = new MediaCore\Lti();
-$params = array(
+
+$baseUrl = 'http://localhost:8080';
+$endpoint = 'chooser';
+$key = 'sample-key';
+$secret = 'sample-secret';
+$lti = new MediaCore\Lti($baseUrl, $key, $secret);
+
+$ltiParams = array(
 	'context_id' => 'my_context_id',
 	'context_label' => 'test_course_label',
 	'context_title' => 'test_course_title',
@@ -44,11 +50,11 @@ $params = array(
 	'tool_consumer_info_version' => '1.0',
 	'user_id' => '101',
 );
-$url = 'http://your.mediacore.site/chooser';
-$key = 'sample-key';
-$secret = 'sample-secret';
-$signedUrl = $lti->buildRequestUrl($params, $url, 'GET', $key, $secret);
-echo $signedUrl;
+
+$signedUrl = $lti->buildRequestUrl($ltiParams, $endpoint, 'GET');
+
+$getResponse = $lti->get($ltiParams, $endpoint);
+$postResponse = $lti->post($ltiParams, $endpoint);
 ```
 
 ## Tests ##
