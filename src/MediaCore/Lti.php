@@ -103,7 +103,9 @@ class Lti
     /**
      * Perform a GET request to an LTI-signed request url
      *
-     * @return *
+     * @param array $params
+     * @param string $endpoint
+     * @return \*
      */
     public function get($params, $endpoint='')
     {
@@ -114,7 +116,9 @@ class Lti
     /**
      * Perform a POST request to an LTI-signed request url
      *
-     * @return *
+     * @param array $params
+     * @param string $endpoint
+     * @return \*
      */
     public function post($params, $endpoint='')
     {
@@ -128,10 +132,8 @@ class Lti
      * Build the LTI request using LTI params passed in as arguments
      *
      * @param array $params
-     * @param string $url
+     * @param string $endpoint
      * @param string $method
-     * @param string $key
-     * @param string $secret
      */
     public function buildRequestUrl($params, $endpoint='', $method='GET')
     {
