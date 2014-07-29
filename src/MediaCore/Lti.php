@@ -1,8 +1,11 @@
 <?php
 namespace MediaCore;
-use MediaCore\OAuth\SignatureMethod\HMAC_SHA1;
+
+use MediaCore\Http\Adapter\Curl as CurlAdapter;
+use MediaCore\Http\Client;
 use MediaCore\OAuth\Consumer;
 use MediaCore\OAuth\Request;
+use MediaCore\OAuth\SignatureMethod\HMAC_SHA1;
 
 
 /**
@@ -18,6 +21,27 @@ use MediaCore\OAuth\Request;
  */
 class Lti
 {
+    /**
+     * The API client
+     *
+     * @type Client
+     */
+    private $client;
+
+    /**
+     * The LTI consumer key
+     *
+     * @type string
+     */
+    private $key;
+
+    /**
+     * The LTI consumer secret
+     *
+     * @type string
+     */
+    private $secret;
+
     /**
      * Lti signature method
      *
@@ -62,14 +86,46 @@ class Lti
 
     /**
      * Constructor
+     *
+     * @param string $baseUrl
+     * @param string $key
+     * @param string $secret
      */
-    public function __construct()
+    public function __construct($baseUrl, $key, $secret)
     {
+        $this->client = new Client($baseUrl, new CurlAdapter());
+        $this->key = $key;
+        $this->secret = $secret;
+        $this->consumer = new Consumer($this->key, $this->secret);
         $this->signatureMethod = new HMAC_SHA1();
     }
 
     /**
-     * Build the LTI request including the OAuth parameters
+     * Perform a GET request to an LTI-signed request url
+     *
+     * @return *
+     */
+    public function get($params, $endpoint='')
+    {
+        $requestUrl = $this->buildRequestUrl($params, $endpoint, 'GET');
+        return $this->client->get($requestUrl);
+    }
+
+    /**
+     * Perform a POST request to an LTI-signed request url
+     *
+     * @return *
+     */
+    public function post($params, $endpoint='')
+    {
+        $requestUrl = $this->buildRequestUrl($params, $endpoint, 'POST');
+        $url = $this->request->getBaseUri()->toString();
+        $params = $this->request->getParams();
+        return $this->client->post($url, $params);
+    }
+
+    /**
+     * Build the LTI request using LTI params passed in as arguments
      *
      * @param array $params
      * @param string $url
@@ -77,17 +133,13 @@ class Lti
      * @param string $key
      * @param string $secret
      */
-    public function buildRequestUrl($params, $url, $method='GET', $key, $secret)
+    public function buildRequestUrl($params, $endpoint='', $method='GET')
     {
-        $this->params = $params;
-        $this->url = $url;
-        $this->method = $method;
-        $this->consumer = new Consumer($key, $secret);
         $this->request = new Request(
             $this->consumer,
-            $this->url,
-            $this->method,
-            $this->params
+            $this->client->getUrl($endpoint),
+            $method,
+            $params
         );
         return $this->request->signRequest($this->signatureMethod);
     }

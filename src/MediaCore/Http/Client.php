@@ -1,6 +1,6 @@
 <?php
 namespace MediaCore\Http;
-use MediaCore\Http\Adapter\Curl as CurlAdapter;
+use MediaCore\Http\Adapter\AdapterInterface as AdapterInterface;
 
 
 /**
@@ -21,24 +21,25 @@ class Client
      *
      * @type string
      */
-    private $url;
+    private $baseUrl;
 
     /**
-     * A Curl Adapter that will handle
-     * requests to the url endpoints
+     * An adapter that will handle requests to url endpoints
      *
-     * @type CurlAdapter
+     * @type AdapterInterface
      */
     private $adapter;
 
     /**
      * Constructor
-     * @param string $url
+     *
+     * @param string $baseUrl
+     * @param AdapterInterface $adapter
      */
-    public function __construct($url)
+    public function __construct($baseUrl, $adapter)
     {
-        $this->url = $url;
-        $this->adapter = new CurlAdapter();
+        $this->baseUrl = $baseUrl;
+        $this->adapter = $adapter;
     }
 
     /**
