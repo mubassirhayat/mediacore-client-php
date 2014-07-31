@@ -1,7 +1,7 @@
 <?php
-namespace MediaCore\OAuth\SignatureMethod;
-use MediaCore\OAuth\Consumer;
-use MediaCore\OAuth\SignatureMethod\SignatureMethodInterface;
+namespace MediaCore\Auth\OAuth\SignatureMethod;
+
+use MediaCore\Auth\OAuth\SignatureMethod\SignatureMethodInterface;
 
 
 /**
@@ -9,7 +9,7 @@ use MediaCore\OAuth\SignatureMethod\SignatureMethodInterface;
  * and a signing key.
  *
  * @category    MediaCore
- * @package     MediaCore\OAuth\SignatureMethod\HMAC_SHA1
+ * @package     MediaCore\Auth\OAuth\SignatureMethod\HMAC_SHA1
  * @subpackage
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license
@@ -52,7 +52,7 @@ class HMAC_SHA1 implements SignatureMethodInterface
      */
     public function buildSignature($consumer, $baseString)
     {
-        $signingKey = rawurlencode($consumer->secret) . '&';
+        $signingKey = rawurlencode($consumer->getSecret()) . '&';
         return base64_encode(hash_hmac('sha1', $baseString, $signingKey,
             /* raw_output */ true));
     }

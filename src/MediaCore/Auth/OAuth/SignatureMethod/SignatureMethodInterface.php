@@ -1,13 +1,12 @@
 <?php
-namespace MediaCore\OAuth\SignatureMethod;
-use MediaCore\OAuth\Consumer;
+namespace MediaCore\Auth\OAuth\SignatureMethod;
 
 
 /**
  * A signature method interace
  *
  * @category    MediaCore
- * @package     MediaCore\OAuth\SignatureMethod\SignatureMethodInterface
+ * @package     MediaCore\Auth\OAuth\SignatureMethod\SignatureMethodInterface
  * @subpackage
  * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
  * @license

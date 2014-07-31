@@ -1,58 +1,70 @@
 <?php
 namespace MediaCore\Http;
-use MediaCore\Http\Adapter\AdapterInterface as AdapterInterface;
 
 
-/**
- * HTTP Client
- *
- * @category    MediaCore
- * @package     MediaCore\Http\Client
- * @subpackage
- * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
- * @license
- * @version     Release:
- * @link        https://github.com/mediacore/mediacore-client-php
- */
 class Client
 {
-    /**
-     * The base url
-     *
-     * @type string
-     */
-    private $baseUrl;
 
     /**
-     * An adapter that will handle requests to url endpoints
+     * GET method
      *
-     * @type AdapterInterface
+     * @var string
      */
-    private $adapter;
+    const GET = 'GET';
 
     /**
-     * Constructor
+     * POST method
      *
-     * @param string $baseUrl
-     * @param AdapterInterface $adapter
+     * @var string
      */
-    public function __construct($baseUrl, $adapter)
+    const POST = 'POST';
+
+    /**
+     * WPUT
+     *
+     * @var string
+     */
+    const PUT = 'PUT';
+
+    /**
+     * DELETE method
+     *
+     * @var string
+     */
+    const DELETE = 'DELETE';
+
+    /**
+     *
+     * @var string
+     */
+    private $url = '';
+
+    /**
+     *
+     * @var Auth\AuthInterface
+     */
+    private $auth = null;
+
+    /**
+     *
+     * @var Response
+     */
+    private $response = null;
+
+    /**
+     */
+    public function __construct($url, $auth=null)
     {
-        $this->baseUrl = $baseUrl;
-        $this->adapter = $adapter;
+        $this->url = rtrim($url, '/');
+        $this->auth = $auth;
     }
 
     /**
-     * Get a constructed path from supplied
-     * path segments without slashes
-     *
-     * @param string ...
-     * @return string
      */
     public function getUrl()
     {
         $args = func_get_args();
-        $url = $this->baseUrl;
+        $url = $this->url;
         if (is_array($args) && !empty($args)) {
             $url .= '/' . implode('/', $args);
         }
@@ -60,60 +72,82 @@ class Client
     }
 
     /**
-     * Percent encode (RFC3986) the query params values
-     *
-     * @param string $params
-     * @return array
+     * @param array $params
      */
     public function getQuery($params)
     {
-        $encodedParams = '';
-        foreach ($params as $k => $v) {
-            $encodedParams .= rawurlencode($k) . '=';
-            $encodedParams .= rawurlencode($v) . "&";
+        return http_build_query($params, PHP_QUERY_RFC3986);
+    }
+
+    /**
+     */
+    public function get($url, $headers=array(), $options=array())
+    {
+        $this->send($url, self::GET, null, $headers, $options);
+    }
+
+    /**
+     */
+    public function post($url, $data=array(), $headers=array(), $options=array())
+    {
+        $this->send($url, self::POST, $data, $headers, $options);
+
+    }
+
+    /**
+     */
+    public function put($url, $data=array(), $headers=array(), $options=array())
+    {
+        $this->send($url, self::PUT, $data, $headers, $options);
+    }
+
+    /**
+     */
+    public function delete($url, $headers=array(), $options=array())
+    {
+        $this->send($url, self::DELETE, null, $headers, $options);
+    }
+
+    /**
+     */
+    public function send($url, $method=self::GET, $data=array(),
+        $headers=array(), $options=array())
+    {
+        if (isset($this->auth)) {
+            $options['auth'] = $this->auth;
         }
-        return substr($encodedParams, 0, -1);
+        $response = new Response(
+            \Requests::request($url, $headers, $data, $method, $options)
+        );
+
+        \Psy\Shell::debug(get_defined_vars());
+
+        $this->response = $response;
+        return $this->response;
     }
 
     /**
-     * Send a GET curl request
      *
-     * @param string $url
-     * @param array $options
-     * @param array $headers
-     * @return mixed
+     * @return Response $rsponse
      */
-    public function get($url, $options=array(), $headers=array()) {
-        return $this->send($url, 'GET', null, $options, $headers);
+    public function getResponse()
+    {
+        return $this->response;
     }
 
     /**
-     * Send a POST curl request
      *
-     * @param string $url
-     * @param array $data
-     * @param array $options
-     * @param array $headers
-     * @return mixed
+     * @param Response $rsponse
+     * @param boolean $assoc
+     * @return object|array|null
      */
-    public function post($url, $data, $options=array(), $headers=array()) {
-        return $this->send($url, 'POST', $data, $options, $headers);
-    }
-
-    /**
-     * Send an adapter request
-     *
-     * @param string $url
-     * @param string $method
-     * @param array $data
-     * @param array $options
-     * @param array $headers
-     * @return string|boolean
-     */
-    private function send($url, $method, $data=null,
-            $options=array(), $headers=array()) {
-
-        return $this->adapter->send($url, $method, $data,
-            $options, $headers);
+    public function parseJson($response, $assoc=true)
+    {
+        if (!isset($response->body)) {
+            throw new InvalidArgumentException(
+                'The response object does not contain a body!'
+            );
+        }
+        return json_decode($response->body, $assoc);
     }
 }
