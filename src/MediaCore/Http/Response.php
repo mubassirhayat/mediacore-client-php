@@ -30,6 +30,10 @@ class Response
 
     /**
      */
+    public $json;
+
+    /**
+     */
     private $response;
 
     /**
@@ -43,5 +47,20 @@ class Response
         $this->statusCode = $response->status_code;
         $this->success = $response->success;
         $this->url = $response->url;
+        $this->json = $this->parseJson();
+    }
+
+    /**
+     *
+     * @param Response $rsponse
+     * @param boolean $asArray
+     * @return object|array|null
+     */
+    public function parseJson($asArray=false)
+    {
+        if (!isset($this->body)) {
+            return null;
+        }
+        return json_decode($this->body, $asArray);
     }
 }
