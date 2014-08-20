@@ -14,42 +14,25 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->baseUrl = 'http://training.mediacore.tv';
-        $adapter = new Curl();
-        $this->client = new Client($this->baseUrl, $adapter);
+        $this->client = new Client($this->baseUrl);
     }
 
     /**
      */
     protected function tearDown()
     {
+        $this->baseUrl = null;
+        $this->client = null;
     }
 
     /**
-     * @covers MediaCore\Http\Client::getUrl
+     * @covers MediaCore\Http\Client::getApiUrl
      */
     public function testApiUrl()
     {
-        $getUrl = $this->client->getUrl('api2', 'media');
+        $url = $this->client->getApiUrl('media');
         $expectedValue = $this->baseUrl . '/api2/media';
-        $this->assertEquals($expectedValue, $getUrl);
-
-        $getUrl = $this->client->getUrl('api2', 'media', 'get');
-        $expectedValue = $this->baseUrl . '/api2/media/get';
-        $this->assertEquals($expectedValue, $getUrl);
-    }
-
-    /**
-     * @covers MediaCore\Http\Client::getQuery
-     */
-    public function testGetQuery()
-    {
-        $queryParams = array(
-            'one' => 'firstvalue',
-            'two' => 'secondcvlue',
-        );
-        $queryStr = http_build_query($queryParams);
-        $expectedValue = str_replace('+', '%20', $queryStr);
-        $this->assertEquals($expectedValue, $this->client->getQuery($queryParams));
+        $this->assertEquals($expectedValue, $url);
     }
 
     /**
@@ -57,13 +40,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testGet()
     {
-        $queryParams = array(
-            'joins' => 'files',
-        );
-        $queryStr = $this->client->get($this->client->getQuery($queryParams));
-        $url = $this->client->getUrl('api2', 'media') . '?' . $queryStr;
-        $result = $this->client->get($url);
-        $obj = json_decode($result);
-        $this->assertObjectHasAttribute('items', (object)$obj);
+        $url = $this->client->getApiUrl('media', '2751068');
+        $response = $this->client->get($url);
+        $this->assertObjectHasAttribute('id', $response->json);
+        $this->assertEquals('2751068', $response->json->id);
     }
 }
