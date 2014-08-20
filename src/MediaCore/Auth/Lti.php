@@ -70,14 +70,22 @@ class Lti implements \Requests_Auth
 
     /**
      */
-    public function register(\Requests_Hooks &$hooks) {
+    public function register(\Requests_Hooks &$hooks)
+    {
         $hooks->register('requests.before_request', array(&$this, 'before_request'));
     }
 
     /**
      */
-    public function before_request(&$url, &$headers, &$data, &$type, &$options) {
+    public function before_request(&$url, &$headers, &$data, &$type, &$options)
+    {
         $url = $this->buildRequestUrl($url, $type, $data);
+        if ($type != 'GET') {
+            $uri = \Zend\Uri\UriFactory::factory($url);
+            $data = $uri->getQueryAsArray();
+            $uri->setQuery('');
+            $url = $uri->toString();
+        }
     }
 
     /**
