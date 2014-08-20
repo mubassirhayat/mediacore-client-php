@@ -31,9 +31,9 @@ class Request
     /**
      * The uri
      *
-     * @var null|string
+     * @var null|\Zend\Uri\Uri
      */
-    private $url = null;
+    private $uri = null;
 
     /**
      * The request method
@@ -50,21 +50,16 @@ class Request
      * @param string $method
      * @param array $params
      */
-    public function __construct($consumer, $url, $method, $params)
+    public function __construct($consumer, $url, $method, $params=array())
     {
         $this->consumer = $consumer;
         $this->method = $method;
 
-        // All params are appended, even duplicates
-        // FIXME
-        $this->url = $url;
-        if (strpos($this->url, '?') === false) {
-            $this->url .= '?';
-        } else {
-            $this->url .= '&';
-        }
-        $this->url .= http_build_query($this->getOAuthParams(), PHP_QUERY_RFC3986) . '&';
-        $this->url .= http_build_query($params, PHP_QUERY_RFC3986);
+        $this->uri = \Zend\Uri\UriFactory::factory($url);
+        $this->queryParams = $this->uri->getQueryAsArray();
+        $this->oAuthParams = $this->getOAuthParams();
+        $this->params = $params;
+        $this->uri->setQuery('');
     }
 
     /**
@@ -76,11 +71,53 @@ class Request
      */
     public function signRequest($signatureMethod)
     {
-        $this->url .= '&oauth_signature_method='. $signatureMethod->getName();
-        $this->url .= '&oauth_signature=' . $signatureMethod->buildSignature(
-            $this->consumer, $this->getBaseString());
+        $this->oAuthParams['oauth_signature_method'] = $signatureMethod->getName();
+        $this->oAuthParams['oauth_signature'] = $signatureMethod->buildSignature($this->consumer,
+            $this->getBaseString());
 
-        return $this->url;
+        $uri = clone $this->uri;
+        $uri->setQuery($this->buildEncodedQueryStr());
+        return $uri->toString();
+    }
+
+    /**
+     */
+    public function getBaseUrl() {
+        $scheme = $this->uri->getScheme();
+        $host = $this->uri->getHost();
+        $port = $this->uri->getPort();
+        $path = $this->uri->getPath();
+
+        $baseUrl = $scheme;
+        $baseUrl .= '://' . $host;
+        if (($scheme == 'http' && $port != '80') ||
+            ($scheme == 'https' && $port != '443')) {
+            $baseUrl .= ':' . $port;
+        }
+        if (!empty($path)) {
+            $baseUrl .= $path;
+        }
+        return $baseUrl;
+    }
+
+    /**
+     * Get the url
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->uri->toString();
+    }
+
+    /**
+     * Get the query string
+     *
+     * @return string
+     */
+    public function getQueryStr()
+    {
+        return $this->buildEncodedQueryStr();
     }
 
     /**
@@ -94,37 +131,44 @@ class Request
     }
 
     /**
-     * Get the uri
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
-
-    /**
      * Encode the HTTP method, base URL, and parameter string into a
      * single string
      *
      * @return string
      */
-    public function getBaseString() {
+    private function getBaseString() {
         $baseStrings = array();
+
+        //method
         $baseStrings[] = strtoupper($this->method);
 
-        $pos = strpos($this->url, '?');
-        $baseUrl = substr($this->url, 0, $pos);
-
+        //base url (scheme://host:port/path)
+        $baseUrl = $this->getBaseUrl();
         $baseStrings[] = rawurlencode($baseUrl);
 
-        $queryStr = substr($this->url, $pos + 1, -1);
-        $encodedParamArray = explode('&', $queryStr);
+        //query str
+        $encodedParamArray = array();
+        parse_str($this->buildEncodedQueryStr(), $encodedParamArray);
         $baseStrings[] = rawurlencode(
             $this->toByteOrderedValueQueryString($encodedParamArray)
         );
+        $ret = implode('&', $baseStrings);
+        return $ret;
+    }
 
-        return implode('&', $baseStrings);
+    /**
+     * Append all params to the query str
+     */
+    private function buildEncodedQueryStr() {
+        $queryStr = '';
+        if (!empty($this->queryParams)) {
+            $queryStr .= http_build_query($this->queryParams, PHP_QUERY_RFC3986);
+        }
+        $queryStr .= '&' . http_build_query($this->oAuthParams, PHP_QUERY_RFC3986);
+        if (!empty($this->params)) {
+            $queryStr .= '&' . http_build_query($this->params, PHP_QUERY_RFC3986);
+        }
+        return $queryStr;
     }
 
     /**
