@@ -4,7 +4,6 @@ namespace MediaCore\Http;
 
 class Client
 {
-
     /**
      * GET method
      *

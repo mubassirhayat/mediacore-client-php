@@ -184,7 +184,6 @@ class Request
     private function toByteOrderedValueQueryString($params)
     {
         uksort($params, 'strnatcmp');
-
         $pairs = array();
         foreach ($params as $key=>$value) {
             if (is_array($value)) {
