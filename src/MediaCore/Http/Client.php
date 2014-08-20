@@ -34,6 +34,13 @@ class Client
     const DELETE = 'DELETE';
 
     /**
+     * API base route
+     *
+     * @var string
+     */
+    const API_PATH = '/api2';
+
+    /**
      *
      * @var string
      */
@@ -63,12 +70,24 @@ class Client
      */
     public function getUrl()
     {
+        $path = '';
         $args = func_get_args();
-        $url = $this->url;
         if (is_array($args) && !empty($args)) {
-            $url .= '/' . implode('/', $args);
+            $path .= '/' . implode('/', $args);
         }
-        return $url;
+        return $this->url . $path;
+    }
+
+    /**
+     */
+    public function getApiUrl()
+    {
+        $path = self::API_PATH;
+        $args = func_get_args();
+        if (is_array($args) && !empty($args)) {
+            $path .= '/' . implode('/', $args);
+        }
+        return $this->url . $path;
     }
 
     /**
@@ -83,29 +102,28 @@ class Client
      */
     public function get($url, $headers=array(), $options=array())
     {
-        $this->send($url, self::GET, null, $headers, $options);
+        return $this->send($url, self::GET, null, $headers, $options);
     }
 
     /**
      */
     public function post($url, $data=array(), $headers=array(), $options=array())
     {
-        $this->send($url, self::POST, $data, $headers, $options);
-
+        return $this->send($url, self::POST, $data, $headers, $options);
     }
 
     /**
      */
     public function put($url, $data=array(), $headers=array(), $options=array())
     {
-        $this->send($url, self::PUT, $data, $headers, $options);
+        return $this->send($url, self::PUT, $data, $headers, $options);
     }
 
     /**
      */
     public function delete($url, $headers=array(), $options=array())
     {
-        $this->send($url, self::DELETE, null, $headers, $options);
+        return $this->send($url, self::DELETE, null, $headers, $options);
     }
 
     /**
@@ -116,38 +134,25 @@ class Client
         if (isset($this->auth)) {
             $options['auth'] = $this->auth;
         }
-        $response = new Response(
+        $this->response = new Response(
             \Requests::request($url, $headers, $data, $method, $options)
         );
-
-        \Psy\Shell::debug(get_defined_vars());
-
-        $this->response = $response;
-        return $this->response;
-    }
-
-    /**
-     *
-     * @return Response $rsponse
-     */
-    public function getResponse()
-    {
         return $this->response;
     }
 
     /**
      *
      * @param Response $rsponse
-     * @param boolean $assoc
+     * @param boolean $asArray
      * @return object|array|null
      */
-    public function parseJson($response, $assoc=true)
+    public function parseJson($response, $asArray=false)
     {
         if (!isset($response->body)) {
             throw new InvalidArgumentException(
-                'The response object does not contain a body!'
+                'The response object does not contain a body'
             );
         }
-        return json_decode($response->body, $assoc);
+        return json_decode($response->body, $asArray);
     }
 }
