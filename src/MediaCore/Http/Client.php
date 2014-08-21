@@ -47,13 +47,13 @@ class Client
 
     /**
      *
-     * @var Auth\AuthInterface
+     * @var null|\Requests_Auth
      */
     private $auth = null;
 
     /**
      *
-     * @var Response
+     * @var null\Response
      */
     private $response = null;
 
@@ -62,6 +62,13 @@ class Client
     public function __construct($url, $auth=null)
     {
         $this->url = rtrim($url, '/');
+        $this->auth = $auth;
+    }
+
+    /**
+     */
+    public function setAuth($auth)
+    {
         $this->auth = $auth;
     }
 

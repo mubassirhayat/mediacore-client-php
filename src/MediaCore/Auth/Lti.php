@@ -1,11 +1,6 @@
 <?php
 namespace MediaCore\Auth;
 
-use MediaCore\Auth\OAuth\Consumer;
-use MediaCore\Auth\OAuth\Request;
-use MediaCore\Auth\OAuth\SignatureMethod\HMAC_SHA1;
-
-
 /**
  * A basic LTI request builder
  *
