@@ -1,8 +1,6 @@
 <?php
 namespace MediaCore\Http;
 
-use MediaCore\Http\Adapter\Curl;
-
 /**
  */
 class ClientTest extends \PHPUnit_Framework_TestCase

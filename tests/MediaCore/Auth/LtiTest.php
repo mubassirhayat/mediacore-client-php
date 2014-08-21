@@ -1,8 +1,5 @@
 <?php
-
 namespace MediaCore;
-
-require_once(realpath(dirname(__FILE__) . '/../../../src/MediaCore/Auth/Lti.php'));
 
 /**
  */
