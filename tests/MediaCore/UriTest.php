@@ -8,7 +8,7 @@ class UriTest extends \PHPUnit_Framework_TestCase
     /**
      * @var Uri
      */
-    protected $utils;
+    protected $uri;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -32,10 +32,10 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testAppendParam()
     {
         $url = 'http://example.com/path/to/directory';
-        $utils = new Uri($url);
-        $utils->appendParam('foo', 'bar');
+        $uri = new Uri($url);
+        $uri->appendParam('foo', 'bar');
         $expectedValue = array('foo'=>'bar');
-        $this->assertEquals($expectedValue, $utils->getQueryAsArray());
+        $this->assertEquals($expectedValue, $uri->getQueryAsArray());
     }
 
     /**
@@ -44,10 +44,10 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testAppendParams()
     {
         $url = 'http://example.com/path/to/directory';
-        $utils = new Uri($url);
-        $utils->appendParams(array('foo'=>'bar'));
+        $uri = new Uri($url);
+        $uri->appendParams(array('foo'=>'bar'));
         $expectedValue = array('foo'=>'bar');
-        $this->assertEquals($expectedValue, $utils->getQueryAsArray());
+        $this->assertEquals($expectedValue, $uri->getQueryAsArray());
     }
 
     /**
@@ -56,10 +56,10 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testAppendPath()
     {
         $url = 'http://example.com/path/to/directory';
-        $utils = new Uri($url);
-        $utils->appendPath('/subdirectory');
+        $uri = new Uri($url);
+        $uri->appendPath('/subdirectory');
         $expectedValue = '/path/to/directory/subdirectory/';
-        $this->assertEquals($expectedValue, $utils->getPath());
+        $this->assertEquals($expectedValue, $uri->getPath());
     }
 
     /**
@@ -68,22 +68,22 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testSetParam()
     {
         $url = 'http://example.com/path/to/directory';
-        $utils = new Uri($url);
-        $utils->setParam('foo', 'bar');
+        $uri = new Uri($url);
+        $uri->setParam('foo', 'bar');
         $expectedValue = array('foo'=>'bar');
-        $this->assertEquals($expectedValue, $utils->getQueryAsArray());
+        $this->assertEquals($expectedValue, $uri->getQueryAsArray());
 
         $url = 'http://example.com/path/to/directory?foo=bar';
-        $utils = new Uri($url);
-        $utils->setParam('foo', 'bar');
+        $uri = new Uri($url);
+        $uri->setParam('foo', 'bar');
         $expectedValue = array('foo'=>'bar');
-        $this->assertEquals($expectedValue, $utils->getQueryAsArray());
+        $this->assertEquals($expectedValue, $uri->getQueryAsArray());
 
-        $url = 'http://example.com/path/to/directory?foo=bar&foo=otherValue';
-        $utils = new Uri($url);
-        $utils->setParam('foo', 'bar');
+        $url = 'http://example.com/path/to/directory?foo=bar&foo=baz';
+        $uri = new Uri($url);
+        $uri->setParam('foo', 'bar');
         $expectedValue = array('foo'=>array('bar', 'bar'));
-        $this->assertEquals($expectedValue, $utils->getQueryAsArray());
+        $this->assertEquals($expectedValue, $uri->getQueryAsArray());
     }
 
     /**
@@ -93,15 +93,15 @@ class UriTest extends \PHPUnit_Framework_TestCase
     {
         $url = 'http://example.com/path/to/directory';
         $query = 'foo=bar&baz=qux';
-        $utils = new Uri($url);
-        $utils->setQuery($query);
-        $this->assertEquals($query, $utils->getQuery());
+        $uri = new Uri($url);
+        $uri->setQuery($query);
+        $this->assertEquals($query, $uri->getQuery());
 
         $url = 'http://example.com/path/to/directory?foo=bar&baz=qux';
         $query = 'foo=bar&baz=qux&foo=bar&baz=qux';
-        $utils = new Uri($url);
-        $utils->setQuery($query);
-        $this->assertEquals($query, $utils->getQuery());
+        $uri = new Uri($url);
+        $uri->setQuery($query);
+        $this->assertEquals($query, $uri->getQuery());
     }
 
     /**
@@ -110,16 +110,16 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testRemoveParam()
     {
         $url = 'http://example.com/path/to/directory?foo=bar';
-        $utils = new Uri($url);
-        $utils->removeParam('foo');
+        $uri = new Uri($url);
+        $uri->removeParam('foo');
         $expectedValue = array();
-        $this->assertEquals($expectedValue, $utils->getQueryAsArray());
+        $this->assertEquals($expectedValue, $uri->getQueryAsArray());
 
-        $url = 'http://example.com/path/to/directory?foo=bar&foo=otherValue';
-        $utils = new Uri($url);
-        $utils->removeParam('foo');
+        $url = 'http://example.com/path/to/directory?foo=bar&foo=baz';
+        $uri = new Uri($url);
+        $uri->removeParam('foo');
         $expectedValue = array();
-        $this->assertEquals($expectedValue, $utils->getQueryAsArray());
+        $this->assertEquals($expectedValue, $uri->getQueryAsArray());
     }
 
     /**
@@ -128,8 +128,8 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testGetScheme()
     {
         $url = 'http://example.com/path/to/directory?foo=bar';
-        $utils = new Uri($url);
-        $this->assertEquals('http', $utils->getScheme());
+        $uri = new Uri($url);
+        $this->assertEquals('http', $uri->getScheme());
     }
 
     /**
@@ -138,12 +138,12 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testGetHost()
     {
         $url = 'http://example.com/path/to/directory?foo=bar';
-        $utils = new Uri($url);
-        $this->assertEquals('example.com', $utils->getHost());
+        $uri = new Uri($url);
+        $this->assertEquals('example.com', $uri->getHost());
 
         $url = 'http://example.com:8080/path/to/directory?foo=bar';
-        $utils = new Uri($url);
-        $this->assertEquals('example.com', $utils->getHost());
+        $uri = new Uri($url);
+        $this->assertEquals('example.com', $uri->getHost());
     }
 
     /**
@@ -152,12 +152,12 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testGetPort()
     {
         $url = 'http://example.com:8080/path/to/directory?foo=bar';
-        $utils = new Uri($url);
-        $this->assertEquals('8080', $utils->getPort());
+        $uri = new Uri($url);
+        $this->assertEquals('8080', $uri->getPort());
 
         $url = 'http://example.com/path/to/directory?foo=bar';
-        $utils = new Uri($url);
-        $this->assertNull($utils->getPort());
+        $uri = new Uri($url);
+        $this->assertNull($uri->getPort());
     }
 
     /**
@@ -166,8 +166,8 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testGetPath()
     {
         $url = 'http://example.com:8080/path/to/directory?foo=bar';
-        $utils = new Uri($url);
-        $this->assertEquals('/path/to/directory', $utils->getPath());
+        $uri = new Uri($url);
+        $this->assertEquals('/path/to/directory', $uri->getPath());
     }
 
     /**
@@ -176,8 +176,8 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testGetFragment()
     {
         $url = 'http://www.example.org/foo.html#bar';
-        $utils = new Uri($url);
-        $this->assertEquals('bar', $utils->getFragment());
+        $uri = new Uri($url);
+        $this->assertEquals('bar', $uri->getFragment());
     }
 
     /**
@@ -186,14 +186,14 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testGetQuery()
     {
         $url = 'http://example.com/path/to/directory?foo=bar';
-        $utils = new Uri($url);
+        $uri = new Uri($url);
         $expectedValue = 'foo=bar';
-        $this->assertEquals($expectedValue, $utils->getQuery());
+        $this->assertEquals($expectedValue, $uri->getQuery());
 
-        $url = 'http://example.com/path/to/directory?foo=bar&foo=otherValue';
-        $utils = new Uri($url);
-        $expectedValue = 'foo=bar&foo=otherValue';
-        $this->assertEquals($expectedValue, $utils->getQuery());
+        $url = 'http://example.com/path/to/directory?foo=bar&foo=baz';
+        $uri = new Uri($url);
+        $expectedValue = 'foo=bar&foo=baz';
+        $this->assertEquals($expectedValue, $uri->getQuery());
     }
 
     /**
@@ -203,27 +203,27 @@ class UriTest extends \PHPUnit_Framework_TestCase
     {
         //simple query string
         $url = 'http://example.com/path/to/directory?foo=bar';
-        $utils = new Uri($url);
+        $uri = new Uri($url);
         $expectedValue = array('foo'=>'bar');
-        $this->assertEquals($expectedValue, $utils->getQueryAsArray());
+        $this->assertEquals($expectedValue, $uri->getQueryAsArray());
 
         //multiple query params
         $url = 'http://example.com/path/to/directory?foo=bar&foo=baz';
-        $utils = new Uri($url);
+        $uri = new Uri($url);
         $expectedValue = array('foo'=>array('bar','baz'));
-        $this->assertEquals($expectedValue, $utils->getQueryAsArray());
+        $this->assertEquals($expectedValue, $uri->getQueryAsArray());
 
         //foo=bar=baz
         $url = 'http://example.com/path/to/directory?foo=bar%3Dbaz';
-        $utils = new Uri($url);
+        $uri = new Uri($url);
         $expectedValue = array('foo'=>'bar=baz');
-        $this->assertEquals($expectedValue, $utils->getQueryAsArray());
+        $this->assertEquals($expectedValue, $uri->getQueryAsArray());
 
         //empty query param value
         $url = 'http://example.com/path/to/directory?foo=bar&baz=';
-        $utils = new Uri($url);
+        $uri = new Uri($url);
         $expectedValue = array('foo'=>'bar','baz'=>'');
-        $this->assertEquals($expectedValue, $utils->getQueryAsArray());
+        $this->assertEquals($expectedValue, $uri->getQueryAsArray());
     }
 
     /**
@@ -232,14 +232,14 @@ class UriTest extends \PHPUnit_Framework_TestCase
     public function testGetParamValue()
     {
         $url = 'http://example.com/path/to/directory?foo=bar';
-        $utils = new Uri($url);
+        $uri = new Uri($url);
         $expectedValue = 'bar';
-        $this->assertEquals($expectedValue, $utils->getParamValue('foo'));
+        $this->assertEquals($expectedValue, $uri->getParamValue('foo'));
 
-        $url = 'http://example.com/path/to/directory?foo=bar&foo=otherValue';
-        $utils = new Uri($url);
-        $expectedValue = array('bar','otherValue');
-        $this->assertEquals($expectedValue, $utils->getParamValue('foo'));
+        $url = 'http://example.com/path/to/directory?foo=bar&foo=baz';
+        $uri = new Uri($url);
+        $expectedValue = array('bar','baz');
+        $this->assertEquals($expectedValue, $uri->getParamValue('foo'));
     }
 
     /**
@@ -250,10 +250,10 @@ class UriTest extends \PHPUnit_Framework_TestCase
         //test nested arrays
         $params = array(
             'foo'=>'bar',
-            'myDuplicateKey'=>array('bar','myDupValue'),
+            'foo'=>array('bar','baz'),
         );
         $encodedQuery = Uri::buildQuery($params);
-        $expectedValue = 'foo=bar&myDuplicateKey=bar&myDuplicateKey=myDupValue';
+        $expectedValue = 'foo=bar&foo=baz';
         $this->assertEquals($expectedValue, $encodedQuery);
 
         //test query encoding
@@ -273,9 +273,9 @@ class UriTest extends \PHPUnit_Framework_TestCase
      */
     public function testHasParam()
     {
-        $url = 'http://example.com/path/to/directory?foo=bar&foo=otherValue';
-        $utils = new Uri($url);
-        $this->assertTrue($utils->hasParam('foo'));
+        $url = 'http://example.com/path/to/directory?foo=bar&foo=baz';
+        $uri = new Uri($url);
+        $this->assertTrue($uri->hasParam('foo'));
     }
 
     /**
@@ -283,8 +283,8 @@ class UriTest extends \PHPUnit_Framework_TestCase
      */
     public function testToString()
     {
-        $url = 'http://example.com/path/to/directory?foo=bar&foo=otherValue';
-        $utils = new Uri($url);
-        $this->assertEquals($url, $utils->toString());
+        $url = 'http://example.com/path/to/directory?foo=bar&foo=baz';
+        $uri = new Uri($url);
+        $this->assertEquals($url, $uri->toString());
     }
 }
