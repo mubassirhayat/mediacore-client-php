@@ -1,9 +1,11 @@
 {
 	"name": "mediacore/mediacore-client-php",
 	"description": "A set of OAuth, LTI, and Client libraries to interface with MediaCore",
-	"keywords": ["mediacore"],
+	"keywords": ["mediacore","php"],
 	"homepage": "https://github.com/mediacore/mediacore-client-php",
 	"license": "proprietary",
+	"version": "1.0.0-dev",
+	"support": "support@mediacore.com",
 	"repositories": [
 		{
 			"type": "composer",
