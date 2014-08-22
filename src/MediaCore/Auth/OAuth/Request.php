@@ -1,9 +1,6 @@
 <?php
 namespace MediaCore\Auth\OAuth;
 
-use MediaCore\Uri\Utils as UriUtils;
-
-
 /**
  * An Oauth Request
  *
@@ -57,7 +54,7 @@ class Request
         $this->consumer = $consumer;
         $this->method = $method;
 
-        $this->uri = new UriUtils($url);
+        $this->uri = new \MediaCore\Uri($url);
         $this->queryParams = $this->uri->getQueryAsArray();
         $this->oAuthParams = $this->getOAuthParams();
         $this->params = $params;
@@ -164,11 +161,11 @@ class Request
     private function concatQueryParams() {
         $queryStr = '';
         if (!empty($this->queryParams)) {
-            $queryStr .= UriUtils::buildQuery($this->queryParams);
+            $queryStr .= \MediaCore\Uri::buildQuery($this->queryParams);
         }
-        $queryStr .= '&' . UriUtils::buildQuery($this->oAuthParams);
+        $queryStr .= '&' . \MediaCore\Uri::buildQuery($this->oAuthParams);
         if (!empty($this->params)) {
-            $queryStr .= '&' . UriUtils::buildQuery($this->params);
+            $queryStr .= '&' . \MediaCore\Uri::buildQuery($this->params);
         }
         return $queryStr;
     }

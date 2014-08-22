@@ -3,7 +3,7 @@ namespace MediaCore\Auth\OAuth\SignatureMethod;
 
 
 /**
- * A signature method interace
+ * A signature method interface
  *
  * @category    MediaCore
  * @package     MediaCore\Auth\OAuth\SignatureMethod\SignatureMethodInterface

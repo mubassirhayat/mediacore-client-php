@@ -1,6 +1,7 @@
 <?php
 namespace MediaCore\Http;
 
+use MediaCore\Uri;
 
 class Client
 {
@@ -19,7 +20,7 @@ class Client
     const POST = 'POST';
 
     /**
-     * WPUT
+     * PUT
      *
      * @var string
      */
@@ -40,24 +41,24 @@ class Client
     const API_PATH = '/api2';
 
     /**
+     * The url
      *
      * @var string
      */
     private $url = '';
 
     /**
+     * The auth object
      *
      * @var null|\Requests_Auth
      */
     private $auth = null;
 
     /**
+     * Constructor
      *
-     * @var null\Response
-     */
-    private $response = null;
-
-    /**
+     * @param string $url
+     * @param Requests_Auth $auth
      */
     public function __construct($url, $auth=null)
     {
@@ -66,6 +67,9 @@ class Client
     }
 
     /**
+     * Set the auth used for requests
+     *
+     * @param Requests_auth $auth
      */
     public function setAuth($auth)
     {
@@ -73,6 +77,9 @@ class Client
     }
 
     /**
+     * Get a url based on passed url segments
+     *
+     * @param ...
      */
     public function getUrl()
     {
@@ -85,6 +92,9 @@ class Client
     }
 
     /**
+     * Get a api url based on passed url segments
+     *
+     * @param ...
      */
     public function getApiUrl()
     {
@@ -97,14 +107,24 @@ class Client
     }
 
     /**
+     * Build a percent encoded query string
+     * from an array of un-encoded params
+     * (key/values) pairs
+     *
      * @param array $params
      */
     public function getQuery($params)
     {
-        return http_build_query($params, PHP_QUERY_RFC3986);
+        return Uri::buildQuery($params);
     }
 
     /**
+     * Send a GET request
+     *
+     * @param string $url
+     * @param array $headers
+     * @param array $options
+     * @return \MediaCore\Response
      */
     public function get($url, $headers=array(), $options=array())
     {
@@ -112,6 +132,13 @@ class Client
     }
 
     /**
+     * Send a POST request
+     *
+     * @param string $url
+     * @param array $data
+     * @param array $headers
+     * @param array $options
+     * @return \MediaCore\Response
      */
     public function post($url, $data=array(), $headers=array(), $options=array())
     {
@@ -119,6 +146,13 @@ class Client
     }
 
     /**
+     * Send a PUT request
+     *
+     * @param string $url
+     * @param array $data
+     * @param array $headers
+     * @param array $options
+     * @return \MediaCore\Response
      */
     public function put($url, $data=array(), $headers=array(), $options=array())
     {
@@ -126,6 +160,12 @@ class Client
     }
 
     /**
+     * Send a DELETE request
+     *
+     * @param string $url
+     * @param array $headers
+     * @param array $options
+     * @return \MediaCore\Response
      */
     public function delete($url, $headers=array(), $options=array())
     {
@@ -133,6 +173,13 @@ class Client
     }
 
     /**
+     * Send a request
+     *
+     * @param string $url
+     * @param string $method
+     * @param array $data
+     * @param array $headers
+     * @param array $options
      */
     public function send($url, $method=self::GET, $data=array(),
         $headers=array(), $options=array())
@@ -140,25 +187,8 @@ class Client
         if (isset($this->auth)) {
             $options['auth'] = $this->auth;
         }
-        $this->response = new Response(
+        return new Response(
             \Requests::request($url, $headers, $data, $method, $options)
         );
-        return $this->response;
-    }
-
-    /**
-     *
-     * @param Response $rsponse
-     * @param boolean $asArray
-     * @return object|array|null
-     */
-    public function parseJson($response, $asArray=false)
-    {
-        if (!isset($response->body)) {
-            throw new InvalidArgumentException(
-                'The response object does not contain a body'
-            );
-        }
-        return json_decode($response->body, $asArray);
     }
 }
