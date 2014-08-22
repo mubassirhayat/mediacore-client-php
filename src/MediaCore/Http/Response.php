@@ -2,6 +2,17 @@
 namespace MediaCore\Http;
 
 
+/**
+ * A basic HTTP Response based on Requests_Response
+ *
+ * @category    MediaCore
+ * @package     MediaCore\Http\Response
+ * @subpackage
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @license
+ * @version     Release:
+ * @link        https://github.com/mediacore/mediacore-client-php
+ */
 class Response
 {
     /**

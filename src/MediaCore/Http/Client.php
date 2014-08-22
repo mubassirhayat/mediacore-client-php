@@ -3,6 +3,17 @@ namespace MediaCore\Http;
 
 use MediaCore\Uri;
 
+/**
+ * A basic HTTP client that uses Requests_Request
+ *
+ * @category    MediaCore
+ * @package     MediaCore\Http\Client
+ * @subpackage
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @license
+ * @version     Release:
+ * @link        https://github.com/mediacore/mediacore-client-php
+ */
 class Client
 {
     /**

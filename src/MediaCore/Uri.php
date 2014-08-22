@@ -3,6 +3,27 @@ namespace MediaCore;
 
 use \Zend\Uri\Uri as Zend_Uri;
 
+
+/**
+ * A Uri helper class that uses \Zemd\Uri\Uri
+ * under the hood and adds some additional useful
+ * url methods.
+ *
+ * NOTE: This class changes the way url query params
+ * are interpreted and built. It accepts duplicate
+ * query params and does not interpret params
+ * that use square bracket notation. When calling
+ * getQueryAsArray(), duplicate query params are
+ * assembled in nested arrays keyed to the param key
+ *
+ * @category    MediaCore
+ * @package     MediaCore\Uri
+ * @subpackage
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @license
+ * @version     Release:
+ * @link        https://github.com/mediacore/mediacore-client-php
+ */
 class Uri
 {
     /**
