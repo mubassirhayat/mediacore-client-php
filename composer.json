@@ -5,7 +5,9 @@
 	"homepage": "https://github.com/mediacore/mediacore-client-php",
 	"license": "proprietary",
 	"version": "1.0.0-dev",
-	"support": "support@mediacore.com",
+	"support": {
+		"email": "support@mediacore.com"
+	},
 	"repositories": [
 		{
 			"type": "composer",
