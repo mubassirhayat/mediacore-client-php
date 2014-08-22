@@ -80,6 +80,14 @@ class Utils
     }
 
     /**
+     */
+    public function setQuery($query)
+    {
+        $this->uri->setQuery($query);
+        return $this->toString();
+    }
+
+    /**
      * Remove all occurences of a parameter
      */
     public function removeParam($key)
@@ -143,16 +151,16 @@ class Utils
      */
     public function getQueryAsArray()
     {
-        $decodedQueryStr = rawurldecode($this->getQuery());
-        if (empty($decodedQueryStr)) {
+        $queryStr = $this->getQuery();
+        if (empty($queryStr)) {
             return array();
         }
-        $pairs = explode('&', $decodedQueryStr);
+        $pairs = explode('&', $queryStr);
         $result = array();
         foreach ($pairs as $p) {
-            $kv = explode('=', $p);
-            $key = $kv[0];
-            $val = $kv[1];
+            $kv = explode('=', $p, 2);
+            $key = rawurldecode($kv[0]);
+            $val = rawurldecode($kv[1]);
             if (array_key_exists($key, $result)) {
                 if (is_array($result[$key])) {
                     array_push($result[$key], $val);
