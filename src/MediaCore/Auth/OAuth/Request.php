@@ -1,6 +1,8 @@
 <?php
 namespace MediaCore\Auth\OAuth;
 
+use MediaCore\Uri\Utils as UriUtils;
+
 
 /**
  * An Oauth Request
@@ -55,7 +57,7 @@ class Request
         $this->consumer = $consumer;
         $this->method = $method;
 
-        $this->uri = \Zend\Uri\UriFactory::factory($url);
+        $this->uri = new UriUtils($url);
         $this->queryParams = $this->uri->getQueryAsArray();
         $this->oAuthParams = $this->getOAuthParams();
         $this->params = $params;
@@ -72,11 +74,11 @@ class Request
     public function signRequest($signatureMethod)
     {
         $this->oAuthParams['oauth_signature_method'] = $signatureMethod->getName();
-        $this->oAuthParams['oauth_signature'] = $signatureMethod->buildSignature($this->consumer,
-            $this->getBaseString());
-
+        $this->oAuthParams['oauth_signature'] = $signatureMethod->buildSignature(
+            $this->consumer, $this->getBaseString());
         $uri = clone $this->uri;
-        $uri->setQuery($this->buildEncodedQueryStr());
+        $queryParams = $this->concatQueryParams();
+        $uri->setQuery($queryParams);
         return $uri->toString();
     }
 
@@ -117,7 +119,7 @@ class Request
      */
     public function getQueryStr()
     {
-        return $this->buildEncodedQueryStr();
+        return $this->concatQueryParams();
     }
 
     /**
@@ -148,7 +150,7 @@ class Request
 
         //query str
         $encodedParamArray = array();
-        parse_str($this->buildEncodedQueryStr(), $encodedParamArray);
+        parse_str($this->concatQueryParams(), $encodedParamArray);
         $baseStrings[] = rawurlencode(
             $this->toByteOrderedValueQueryString($encodedParamArray)
         );
@@ -159,14 +161,14 @@ class Request
     /**
      * Append all params to the query str
      */
-    private function buildEncodedQueryStr() {
+    private function concatQueryParams() {
         $queryStr = '';
         if (!empty($this->queryParams)) {
-            $queryStr .= http_build_query($this->queryParams, PHP_QUERY_RFC3986);
+            $queryStr .= UriUtils::buildQuery($this->queryParams);
         }
-        $queryStr .= '&' . http_build_query($this->oAuthParams, PHP_QUERY_RFC3986);
+        $queryStr .= '&' . UriUtils::buildQuery($this->oAuthParams);
         if (!empty($this->params)) {
-            $queryStr .= '&' . http_build_query($this->params, PHP_QUERY_RFC3986);
+            $queryStr .= '&' . UriUtils::buildQuery($this->params);
         }
         return $queryStr;
     }
@@ -188,8 +190,8 @@ class Request
         foreach ($params as $key=>$value) {
             if (is_array($value)) {
                 natsort($value);
-                foreach ($value as $keyduplicate) {
-                    $pairs[] = $key . '=' . $keyduplicate;
+                foreach ($value as $dup) {
+                    $pairs[] = $key . '=' . $dup;
                 }
             } else {
                 $pairs[] = $key . '=' . $value;
