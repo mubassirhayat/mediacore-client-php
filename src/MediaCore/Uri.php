@@ -1,9 +1,9 @@
 <?php
-namespace MediaCore\Uri;
+namespace MediaCore;
 
 use \Zend\Uri\Uri as Zend_Uri;
 
-class Utils
+class Uri
 {
     /**
      * The uri object
@@ -25,6 +25,10 @@ class Utils
 
     /**
      * Encode and append a param to the url
+     *
+     * @param string $key
+     * @param string $value
+     * @return Uri
      */
     public function appendParam($key, $value)
     {
@@ -33,6 +37,9 @@ class Utils
 
     /**
      * Encode and append a list of params to the url
+     *
+     * @param array $params Key/Value pairs
+     * @return Uri
      */
     public function appendParams($params)
     {
@@ -42,22 +49,30 @@ class Utils
         }
         $queryStr .= self::buildQuery($params);
         $this->uri->setQuery($queryStr);
-        return $this->toString();
+        return $this;
     }
 
     /**
+     * Append a path to the url
+     *
+     * @param string $path
+     * @return Uri
      */
     public function appendPath($path)
     {
         $currPath = $this->uri->getPath();
         $currPath .= '/' . trim($path, '/') . '/';
         $this->uri->setPath($currPath);
-        return $this->toString();
+        return $this;
     }
 
     /**
      * Replace all existing parameters with its value
      * encoded
+     *
+     * @param string $key
+     * @param string $value
+     * @return Uri
      */
     public function setParam($key, $value)
     {
@@ -76,19 +91,25 @@ class Utils
         }
         $queryStr = self::buildQuery($params);
         $this->uri->setQuery($queryStr);
-        return $this->toString();
+        return $this;
     }
 
     /**
+     * Set the url query
+     *
+     * @param string $query
      */
     public function setQuery($query)
     {
         $this->uri->setQuery($query);
-        return $this->toString();
+        return $this;
     }
 
     /**
      * Remove all occurences of a parameter
+     *
+     * @param string $key
+     * @return Uri
      */
     public function removeParam($key)
     {
@@ -98,10 +119,13 @@ class Utils
         }
         $queryStr = self::buildQuery($params);
         $this->uri->setQuery($queryStr);
-        return $this->toString();
+        return $this;
     }
 
     /**
+     * Get the url scheme
+     *
+     * @return string
      */
     public function getScheme()
     {
@@ -109,6 +133,9 @@ class Utils
     }
 
     /**
+     * Get the url host (no port)
+     *
+     * @return string
      */
     public function getHost()
     {
@@ -116,6 +143,9 @@ class Utils
     }
 
     /**
+     * Get the url port
+     *
+     * @return null|string
      */
     public function getPort()
     {
@@ -123,6 +153,9 @@ class Utils
     }
 
     /**
+     * Get the url path
+     *
+     * @return null|string
      */
     public function getPath()
     {
@@ -130,6 +163,9 @@ class Utils
     }
 
     /**
+     * Get the url fragment
+     *
+     * @return null|string
      */
     public function getFragment()
     {
@@ -137,6 +173,9 @@ class Utils
     }
 
     /**
+     * Get the url query
+     *
+     * @return null|string
      */
     public function getQuery()
     {
@@ -144,8 +183,8 @@ class Utils
     }
 
     /**
-     * Replacement for parse_str so that it doesn't use the square
-     * bracket notation
+     * Replacement for parse_str so that it doesn't use square
+     * bracket notation for duplicate query params
      *
      * @return array
      */
@@ -176,7 +215,10 @@ class Utils
     }
 
     /**
-     * @return string|array
+     * Get a query param's value(s)
+     *
+     * @param string $key
+     * @return null|string|array
      */
     public function getParamValue($key)
     {
@@ -188,11 +230,10 @@ class Utils
     }
 
     /**
-     * Replacement for http_build_query so that it
-     * doesn't use the square bracket notation for duplicate
-     * query params and reliably percent-encodes params
+     * Replacement for http_build_query so that it reliably percent-encodes
+     * params and doesn't use the square bracket notation for duplicate
      *
-     * @param array $params An associative array of key/value pairs
+     * @param array $params Array of key/value pairs
      * @return string
      */
     public static function buildQuery($params)
@@ -217,6 +258,9 @@ class Utils
 
 
     /**
+     * Check if a url query param existso
+     *
+     * @param string $key
      */
     public function hasParam($key)
     {
@@ -225,9 +269,22 @@ class Utils
     }
 
     /**
+     * Compose the URI into a string
+     *
+     * @return string
      */
     public function toString()
     {
         return $this->uri->toString();
+    }
+
+    /**
+     * Magic method to convert the URI to a string
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->uri->__toString();
     }
 }
