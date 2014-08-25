@@ -198,8 +198,11 @@ class Client
         if (isset($this->auth)) {
             $options['auth'] = $this->auth;
         }
-        return new Response(
-            \Requests::request($url, $headers, $data, $method, $options)
-        );
+        try {
+            $response = \Requests::request($url, $headers, $data, $method, $options);
+            return new Response($response);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
     }
 }
