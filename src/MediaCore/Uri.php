@@ -257,24 +257,28 @@ class Uri
      * @param array $params Array of key/value pairs
      * @return string
      */
-    public static function buildQuery($params)
+    public static function buildQuery()
     {
-        $result = array();
-        foreach ($params as $key=>$values) {
-            $encodedKey = rawurlencode($key);
-            if (is_array($values)) {
-                foreach ($values as $v) {
-                    $encodedVal = rawurlencode($v);
-                    $encodedPair = $encodedKey . '=' . $encodedVal;
-                    array_push($result, $encodedPair);
+        $args = func_get_args();
+        if (empty($args)) {
+            return '';
+        }
+        $queryStr = '';
+        foreach ($args as $arg) {
+            foreach ($arg as $key=>$value) {
+                $encodedKey = rawurlencode($key);
+                if (is_array($value)) {
+                    foreach ($value as $v) {
+                        $encodedVal = rawurlencode($v);
+                        $queryStr .= $encodedKey . '=' . $encodedVal . '&';
+                    }
+                } else {
+                    $encodedVal = rawurlencode($value);
+                    $queryStr .= $encodedKey . '=' . $encodedVal . '&';
                 }
-            } else {
-                $encodedVal = rawurlencode($values);
-                $encodedPair = $encodedKey . '=' . $encodedVal;
-                array_push($result, $encodedPair);
             }
         }
-        return implode('&', $result);
+        return rtrim($queryStr, '&');
     }
 
 

@@ -159,15 +159,11 @@ class Request
      * Append all params to the query str
      */
     private function concatQueryParams() {
-        $queryStr = '';
-        if (!empty($this->queryParams)) {
-            $queryStr .= \MediaCore\Uri::buildQuery($this->queryParams);
-        }
-        $queryStr .= '&' . \MediaCore\Uri::buildQuery($this->oAuthParams);
-        if (!empty($this->params)) {
-            $queryStr .= '&' . \MediaCore\Uri::buildQuery($this->params);
-        }
-        return $queryStr;
+        return \MediaCore\Uri::buildQuery(
+            $this->queryParams,
+            $this->oAuthParams,
+            $this->params
+        );
     }
 
     /**
