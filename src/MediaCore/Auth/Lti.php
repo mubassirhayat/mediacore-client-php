@@ -94,7 +94,7 @@ class Lti implements \Requests_Auth
      */
     public function buildRequestUrl($url, $method, $params)
     {
-        $params['lti_version'] = $this->get_version();
+        $params['lti_version'] = $this->getVersion();
         $request = new OAuth\Request($this->consumer, $url, $method, $params);
         return $request->signRequest($this->signatureMethod);
     }
@@ -104,7 +104,7 @@ class Lti implements \Requests_Auth
      *
      * @return string
      */
-    public function get_version()
+    public function getVersion()
     {
         return self::VERSION;
     }
