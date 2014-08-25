@@ -300,7 +300,7 @@ class Uri
      */
     public function toString()
     {
-        return $this->uri->toString();
+        return $this->__toString();
     }
 
     /**
