@@ -5,6 +5,7 @@ MediaCore PHP LTI, OAuth, and Client libraries
 ## Dependencies ##
 
 - PHP 5.3.3 or greater.
+- [Requests for PHP](https://github.com/rmccue/Requests)
 - [Zend\Uri](http://framework.zend.com/manual/2.3/en/modules/zend.uri.html) Zend Framework 2 package
 
 
@@ -14,7 +15,12 @@ You can install all dependencies using [composer](https://getcomposer.org/):
 
 ```
 brew install composer
-composer install
+
+# install without dev dependencies
+composer install --no-dev
+
+# install with dev dependencides
+composer install --dev
 ```
 
 Composer contains an autoloader for the required php libraries that can be included in your project like so:
@@ -25,16 +31,17 @@ require_once('vendor/autoload.php');
 
 ### Example ###
 
-``` php
+```php
 require_once('vendor/autoload.php');
 
-$baseUrl = 'http://localhost:8080';
-$endpoint = 'chooser';
 $key = 'sample-key';
 $secret = 'sample-secret';
-$lti = new MediaCore\Lti($baseUrl, $key, $secret);
+$auth = new MediaCore\Auth\Lti($key, $secret);
 
-$ltiParams = array(
+$baseUrl = 'http://localhost:8080';
+$client = new MediaCore\Http\Client($baseUrl, $auth);
+
+$params = array(
 	'context_id' => 'my_context_id',
 	'context_label' => 'test_course_label',
 	'context_title' => 'test_course_title',
@@ -44,24 +51,28 @@ $ltiParams = array(
 	'lis_person_name_given' => 'test_name_given',
 	'lis_person_contact_email_primary' => 'test_email',
 	'lti_message_type' => 'basic-lti-launch-request',
-	'lti_version' => $lti->getVersion(),
 	'roles' => 'Instructor',
 	'tool_consumer_info_product_family_code' => 'moodle',
 	'tool_consumer_info_version' => '1.0',
 	'user_id' => '101',
 );
 
-$signedUrl = $lti->buildRequestUrl($ltiParams, $endpoint, 'GET');
+$endpoint = 'chooser';
+$url = $client->getUrl($endpoint) . '?' . $client->getQuery($params);
+$response = $client->get($url);
 
-$getResponse = $lti->get($ltiParams, $endpoint);
-$postResponse = $lti->post($ltiParams, $endpoint);
+if ($response->success) {
+	var_dump($response->body);
+} else {
+	echo 'Error Status: ' . $response->statusCode;
+}
 ```
 
 ## Tests ##
 
-The test libraries require [PHPUnit 4.1.*](http://phpunit.de/), installed via composer.
+The tests use [PHPUnit 4.1.*](http://phpunit.de/). See installing dev dependencies in the installation section above.
 
-You can run the tests like this:
+Once installed, you can run all tests with:
 
 ```
 cd tests
@@ -70,9 +81,11 @@ phpunit --debug
 
 ## Documentation ##
 
-Documentation can be created using [Phpdocumentor](http://www.phpdoc.org/), installed via composer.
+Documentation is created using [ApiGen](http://apigen.org/). See installing dev dependencies in the installation section above.
+
+Once installed, you can build documention with:
 
 ```
-mkdir -p docs/api
-phpdoc -d "./src/" -t "./docs/api/" --template="zend"
+mkdir -p docs/
+./vendor/bin/apigen.php --source /src --destination /docs
 ```
