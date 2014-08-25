@@ -33,7 +33,6 @@ class LtiTest extends \PHPUnit_Framework_TestCase
             'user_id' => 101,
         );
         $this->auth = new Auth\Lti($this->key, $this->secret);
-        $this->client = new Http\Client($this->baseUrl, $this->auth);
     }
 
     /**
@@ -48,30 +47,19 @@ class LtiTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers MediaCore\Lti::get
+     * @covers MediaCore\Lti::beforeRequest
      */
-    public function testGet()
+    public function testBeforeRequest()
     {
-        $queryStr = $this->client->getQuery($this->ltiParams);
-        $url = $this->client->getUrl('chooser') . '?' . $queryStr;
-        $response = $this->client->get($url);
-
-        $dom = new \DOMDocument;
-        $dom->loadHtml(mb_convert_encoding($response->body, 'HTML-ENTITIES', 'UTF-8'));
-        $elem = $dom->getElementById('mcore-chooser');
-        $this->assertInstanceOf('DOMElement', $elem);
+        $url = 'https://localhost:8080';
     }
 
     /**
-     * @covers MediaCore\Lti::post
-     * TODO
+     * @covers MediaCore\Auth\Lti::buildRequestUrl
      */
-    public function testPost()
+    public function buildRquestUrl()
     {
-        // Stop here and mark this test as incomplete.
-        $this->markTestIncomplete(
-            'This test has not been implemented yet.'
-        );
+
     }
 
     /**

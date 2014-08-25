@@ -67,16 +67,16 @@ class Lti implements \Requests_Auth
      */
     public function register(\Requests_Hooks &$hooks)
     {
-        $hooks->register('requests.before_request', array(&$this, 'before_request'));
+        $hooks->register('requests.before_request', array(&$this, 'beforeRequest'));
     }
 
     /**
      */
-    public function before_request(&$url, &$headers, &$data, &$type, &$options)
+    public function beforeRequest(&$url, &$headers, &$data, &$type, &$options)
     {
         $url = $this->buildRequestUrl($url, $type, $data);
         if ($type != 'GET') {
-            $uri = \Zend\Uri\UriFactory::factory($url);
+            $uri = new \MediaCore\Uri($url);
             $data = $uri->getQueryAsArray();
             $uri->setQuery('');
             $url = $uri->toString();
@@ -94,7 +94,7 @@ class Lti implements \Requests_Auth
      */
     public function buildRequestUrl($url, $method, $params)
     {
-        $params['lti_version'] = $this->getVersion();
+        $params['lti_version'] = $this->get_version();
         $request = new OAuth\Request($this->consumer, $url, $method, $params);
         return $request->signRequest($this->signatureMethod);
     }
@@ -104,7 +104,7 @@ class Lti implements \Requests_Auth
      *
      * @return string
      */
-    public function getVersion()
+    public function get_version()
     {
         return self::VERSION;
     }
