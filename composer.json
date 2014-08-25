@@ -21,7 +21,9 @@
 	},
 	"require-dev": {
 		"phpunit/phpunit": ">=4.1",
-		"psy/psysh": "~0.1"
+		"psy/psysh": "~0.1",
+		"apigen/apigen": "2.8.0",
+		"nette/nette": "~2.1.3"
 	},
 	"autoload": {
 		"classmap": [
