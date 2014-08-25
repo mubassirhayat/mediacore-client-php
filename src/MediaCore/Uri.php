@@ -254,7 +254,7 @@ class Uri
      * Replacement for http_build_query so that it reliably percent-encodes
      * params and doesn't use the square bracket notation for duplicate
      *
-     * @param array $params Array of key/value pairs
+     * @param ... $params Any number of associative arrays of params
      * @return string
      */
     public static function buildQuery()
