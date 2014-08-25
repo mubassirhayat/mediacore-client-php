@@ -259,13 +259,24 @@ class UriTest extends \PHPUnit_Framework_TestCase
         //test query encoding
         $params = array(
             'foo with spaces'=>'bar',
-            'myDuplicateKey'=>array('bar with spaces','myDupValue'),
+            'bar'=>array('baz with spaces'),
         );
         $encodedQuery = Uri::buildQuery($params);
-        $expectedValue = 'foo%20with%20spaces=bar&myDuplicateKey=bar%20'
-                       . 'with%20spaces&myDuplicateKey=myDupValue';
+        $expectedValue = 'foo%20with%20spaces=bar&bar=baz%20with%20spaces';
         $this->assertEquals($expectedValue, $encodedQuery);
 
+        //test multiple args
+        $params1 = array(
+            'foo'=>'bar',
+            'foo'=>array('bar','baz'),
+        );
+        $params2 = array(
+            'foo2'=>'bar2',
+            'foo2'=>array('bar2','baz2'),
+        );
+        $encodedQuery = Uri::buildQuery($params1, $params2);
+        $expectedValue = 'foo=bar&foo=baz&foo2=bar2&foo2=baz2';
+        $this->assertEquals($expectedValue, $encodedQuery);
     }
 
     /**
