@@ -6,7 +6,8 @@ namespace MediaCore\Auth\OAuth;
  *
  * @category    MediaCore
  * @package     MediaCore\Auth\OAuth\Request
- * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc.
+ *              (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
@@ -25,21 +26,21 @@ class Request
      *
      * @var null|OAuth\Consumer
      */
-    private $consumer = null;
+    private $_consumer = null;
 
     /**
      * The uri
      *
      * @var null|\Zend\Uri\Uri
      */
-    private $uri = null;
+    private $_uri = null;
 
     /**
      * The request method
      *
      * @var null|string
      */
-    private $method = null;
+    private $_method = null;
 
     /**
      * Constructor
@@ -51,14 +52,17 @@ class Request
      */
     public function __construct($consumer, $url, $method, $params=array())
     {
-        $this->consumer = $consumer;
-        $this->method = $method;
+        $this->_consumer = $consumer;
+        $this->_method = $method;
 
-        $this->uri = new \MediaCore\Uri($url);
-        $this->queryParams = $this->uri->getQueryAsArray();
-        $this->oAuthParams = $this->getOAuthParams();
-        $this->params = $params;
-        $this->uri->setQuery('');
+        //normalize the uri: remove the query params
+        //and store them alonside the oauth and user params
+        $this->_uri = new \MediaCore\Uri($url);
+        $this->_queryParams = $this->_uri->getQueryAsArray(/* encoded */ false);
+        $this->_uri->setQuery('');
+
+        $this->_oAuthParams = $this->_getOAuthParams();
+        $this->_params = $params;
     }
 
     /**
@@ -70,43 +74,13 @@ class Request
      */
     public function signRequest($signatureMethod)
     {
-        $this->oAuthParams['oauth_signature_method'] = $signatureMethod->getName();
-        $this->oAuthParams['oauth_signature'] = $signatureMethod->buildSignature(
-            $this->consumer, $this->getBaseString());
-        $uri = clone $this->uri;
-        $queryParams = $this->concatQueryParams();
-        $uri->setQuery($queryParams);
-        return $uri->toString();
-    }
-
-    /**
-     */
-    public function getBaseUrl() {
-        $scheme = $this->uri->getScheme();
-        $host = $this->uri->getHost();
-        $port = $this->uri->getPort();
-        $path = $this->uri->getPath();
-
-        $baseUrl = $scheme;
-        $baseUrl .= '://' . $host;
-        if (($scheme == 'http' && $port != '80') ||
-            ($scheme == 'https' && $port != '443')) {
-            $baseUrl .= ':' . $port;
-        }
-        if (!empty($path)) {
-            $baseUrl .= $path;
-        }
-        return $baseUrl;
-    }
-
-    /**
-     * Get the url
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->uri->toString();
+        $this->_oAuthParams['oauth_signature_method'] = $signatureMethod->getName();
+        $signature = $signatureMethod->buildSignature(
+            $this->_consumer, $this->_getBaseString());
+        $uri = clone $this->_uri;
+        $queryStr = $this->_concatQueryParams();
+        $uri->setQuery($queryStr);
+        return $uri->toString() . '&oauth_signature=' . $signature;
     }
 
     /**
@@ -116,17 +90,7 @@ class Request
      */
     public function getQueryStr()
     {
-        return $this->concatQueryParams();
-    }
-
-    /**
-     * Get the OAuth version
-     *
-     * @return string
-     */
-    public function getOAuthVersion()
-    {
-        return self::OAUTH_VERSION;
+        return $this->_concatQueryParams();
     }
 
     /**
@@ -135,34 +99,36 @@ class Request
      *
      * @return string
      */
-    private function getBaseString() {
+    private function _getBaseString() {
         $baseStrings = array();
 
         //method
-        $baseStrings[] = strtoupper($this->method);
+        $baseStrings[] = strtoupper($this->_method);
 
         //base url (scheme://host:port/path)
-        $baseUrl = $this->getBaseUrl();
+        $uri = clone $this->_uri;
+        $baseUrl = $uri->toString();
         $baseStrings[] = rawurlencode($baseUrl);
 
         //query str
-        $encodedParamArray = array();
-        parse_str($this->concatQueryParams(), $encodedParamArray);
-        $baseStrings[] = rawurlencode(
-            $this->toByteOrderedValueQueryString($encodedParamArray)
+        $queryStr = $this->_concatQueryParams();
+        $uri->setQuery($queryStr);
+        $orderedParamArray = $this->toByteOrderedValueQueryString(
+            $uri->getQueryAsArray(/* encoded */ true)
         );
-        $ret = implode('&', $baseStrings);
-        return $ret;
+        $baseStrings[] = rawurlencode($orderedParamArray);
+
+        return implode('&', $baseStrings);
     }
 
     /**
      * Append all params to the query str
      */
-    private function concatQueryParams() {
+    private function _concatQueryParams() {
         return \MediaCore\Uri::buildQuery(
-            $this->queryParams,
-            $this->oAuthParams,
-            $this->params
+            $this->_queryParams,
+            $this->_oAuthParams,
+            $this->_params
         );
     }
 
@@ -198,12 +164,12 @@ class Request
      *
      * @return array
      */
-    private function getOAuthParams() {
+    private function _getOAuthParams() {
         return array(
             'oauth_version' => self::OAUTH_VERSION,
-            'oauth_nonce' => $this->generateNonce(),
-            'oauth_timestamp' => $this->generateTimestamp(),
-            'oauth_consumer_key' => $this->consumer->getKey(),
+            'oauth_nonce' => $this->_generateNonce(),
+            'oauth_timestamp' => $this->_generateTimestmp(),
+            'oauth_consumer_key' => $this->_consumer->getKey(),
         );
     }
 
@@ -212,7 +178,7 @@ class Request
      *
      * @return string
      */
-    private function generateNonce()
+    private function _generateNonce()
     {
         $mtime = microtime();
         $rand = mt_rand();
@@ -224,8 +190,18 @@ class Request
      *
      * @return string
      */
-    private function generateTimestamp()
+    private function _generateTimestmp()
     {
         return time();
+    }
+
+    /**
+     * Get the OAuth version
+     *
+     * @return string
+     */
+    public function getOAuthVersion()
+    {
+        return self::OAUTH_VERSION;
     }
 }
