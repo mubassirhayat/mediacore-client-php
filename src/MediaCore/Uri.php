@@ -19,7 +19,8 @@ use \Zend\Uri\Uri as Zend_Uri;
  * @category    MediaCore
  * @package     MediaCore\Uri
  * @subpackage
- * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc.
+ *              (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
@@ -31,7 +32,7 @@ class Uri
      *
      * @type null|Zend\Uri\Uri
      */
-    private $uri = null;
+    private $_uri = null;
 
     /**
      * Constructor
@@ -40,8 +41,12 @@ class Uri
      */
     public function __construct($url)
     {
-        $this->uri = new Zend_Uri($url);
-        $this->uri->normalize();
+        $this->_uri = new Zend_Uri($url);
+        // NOTE: Normalizing a URI includes removing any redundant
+        // parent directory or current directory references from the path
+        // (e.g. foo/bar/../baz becomes foo/baz), normalizing the scheme
+        // case, decoding any over-encoded characters etc.
+        $this->_uri->normalize();
     }
 
     /**
@@ -64,12 +69,12 @@ class Uri
      */
     public function appendParams($params)
     {
-        $queryStr = $this->uri->getQuery();
+        $queryStr = $this->_uri->getQuery();
         if (!empty($queryStr)) {
             $queryStr .= '&';
         }
         $queryStr .= self::buildQuery($params);
-        $this->uri->setQuery($queryStr);
+        $this->_uri->setQuery($queryStr);
         return $this;
     }
 
@@ -81,9 +86,9 @@ class Uri
      */
     public function appendPath($path)
     {
-        $currPath = $this->uri->getPath();
+        $currPath = $this->_uri->getPath();
         $currPath .= '/' . trim($path, '/') . '/';
-        $this->uri->setPath($currPath);
+        $this->_uri->setPath($currPath);
         return $this;
     }
 
@@ -97,7 +102,7 @@ class Uri
      */
     public function setParam($key, $value)
     {
-        $params = $this->getQueryAsArray();
+        $params = $this->getQueryAsArray(/* encoded */ false);
         if (array_key_exists($key, $params)) {
             if (is_array($params[$key])) {
                 //replace all occurences
@@ -111,18 +116,23 @@ class Uri
             $params[$key] = $value;
         }
         $queryStr = self::buildQuery($params);
-        $this->uri->setQuery($queryStr);
+        $this->_uri->setQuery($queryStr);
         return $this;
     }
 
     /**
      * Set the url query
      *
-     * @param string $query
+     * @param string|array $query
      */
     public function setQuery($query)
     {
-        $this->uri->setQuery($query);
+        if (is_array($query)) {
+            $queryStr = self::buildQuery($query);
+            $this->_uri->setQuery($queryStr);
+        } else {
+            $this->_uri->setQuery($query);
+        }
         return $this;
     }
 
@@ -134,12 +144,12 @@ class Uri
      */
     public function removeParam($key)
     {
-        $params = $this->getQueryAsArray();
+        $params = $this->getQueryAsArray(/* encoded */ false);
         if (array_key_exists($key, $params)) {
             unset($params[$key]);
         }
         $queryStr = self::buildQuery($params);
-        $this->uri->setQuery($queryStr);
+        $this->_uri->setQuery($queryStr);
         return $this;
     }
 
@@ -150,7 +160,7 @@ class Uri
      */
     public function getScheme()
     {
-        return $this->uri->getScheme();
+        return $this->_uri->getScheme();
     }
 
     /**
@@ -160,7 +170,7 @@ class Uri
      */
     public function getHost()
     {
-        return $this->uri->getHost();
+        return $this->_uri->getHost();
     }
 
     /**
@@ -170,7 +180,7 @@ class Uri
      */
     public function getPort()
     {
-        return $this->uri->getPort();
+        return $this->_uri->getPort();
     }
 
     /**
@@ -180,7 +190,7 @@ class Uri
      */
     public function getPath()
     {
-        return $this->uri->getPath();
+        return $this->_uri->getPath();
     }
 
     /**
@@ -190,7 +200,7 @@ class Uri
      */
     public function getFragment()
     {
-        return $this->uri->getFragment();
+        return $this->_uri->getFragment();
     }
 
     /**
@@ -200,7 +210,7 @@ class Uri
      */
     public function getQuery()
     {
-        return $this->uri->getQuery();
+        return $this->_uri->getQuery();
     }
 
     /**
@@ -209,7 +219,7 @@ class Uri
      *
      * @return array
      */
-    public function getQueryAsArray()
+    public function getQueryAsArray($encoded=false)
     {
         $queryStr = $this->getQuery();
         if (empty($queryStr)) {
@@ -219,8 +229,12 @@ class Uri
         $result = array();
         foreach ($pairs as $p) {
             $kv = explode('=', $p, 2);
-            $key = rawurldecode($kv[0]);
-            $val = rawurldecode($kv[1]);
+            $key = $kv[0];
+            $val = $kv[1];
+            if (!$encoded) {
+                $key = urldecode($key);
+                $val = urldecode($val);
+            }
             if (array_key_exists($key, $result)) {
                 if (is_array($result[$key])) {
                     array_push($result[$key], $val);
@@ -243,7 +257,7 @@ class Uri
      */
     public function getParamValue($key)
     {
-        $params = $this->getQueryAsArray();
+        $params = $this->getQueryAsArray(/* encoded */ false);
         if (array_key_exists($key, $params)) {
             return $params[$key];
         }
@@ -252,7 +266,7 @@ class Uri
 
     /**
      * Replacement for http_build_query so that it reliably percent-encodes
-     * params and doesn't use the square bracket notation for duplicate
+     * params and doesn't use the square bracket notation for duplicates
      *
      * @param ... $params Any number of associative arrays of params
      * @return string
@@ -266,18 +280,20 @@ class Uri
         $queryStr = '';
         foreach ($args as $arg) {
             foreach ($arg as $key=>$value) {
-                $encodedKey = rawurlencode($key);
+                $key = urlencode($key);
                 if (is_array($value)) {
                     foreach ($value as $v) {
-                        $encodedVal = rawurlencode($v);
-                        $queryStr .= $encodedKey . '=' . $encodedVal . '&';
+                        $val = urlencode($v);
+                        $queryStr .= $key . '=' . $val . '&';
                     }
                 } else {
-                    $encodedVal = rawurlencode($value);
-                    $queryStr .= $encodedKey . '=' . $encodedVal . '&';
+                    $value = urlencode($value);
+                    $queryStr .= $key . '=' . $value . '&';
                 }
             }
         }
+        $queryStr = str_replace('%7E', '~', $queryStr);
+        $queryStr = str_replace('+', '%20', $queryStr);
         return rtrim($queryStr, '&');
     }
 
@@ -310,6 +326,6 @@ class Uri
      */
     public function __toString()
     {
-        return $this->uri->__toString();
+        return $this->_uri->__toString();
     }
 }
