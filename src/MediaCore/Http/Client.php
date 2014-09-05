@@ -9,7 +9,8 @@ use MediaCore\Uri;
  * @category    MediaCore
  * @package     MediaCore\Http\Client
  * @subpackage
- * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc.
+ *              (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
@@ -45,25 +46,18 @@ class Client
     const DELETE = 'DELETE';
 
     /**
-     * API base route
+     * The uri
      *
-     * @var string
+     * @var Uri
      */
-    const API_PATH = '/api2';
-
-    /**
-     * The url
-     *
-     * @var string
-     */
-    private $url = '';
+    private $_uri = '';
 
     /**
      * The auth object
      *
      * @var null|\Requests_Auth
      */
-    private $auth = null;
+    private $_auth = null;
 
     /**
      * Constructor
@@ -73,18 +67,47 @@ class Client
      */
     public function __construct($url, $auth=null)
     {
-        $this->url = rtrim($url, '/');
-        $this->auth = $auth;
+        $this->_uri = new Uri($url);
+        if (isset($auth) && $auth instanceof \Requests_Auth) {
+            $this->_auth = $auth;
+        }
     }
 
     /**
      * Set the auth used for requests
      *
-     * @param Requests_auth $auth
+     * @param Requests_Auth $auth
      */
     public function setAuth($auth)
     {
-        $this->auth = $auth;
+        if (!($auth instanceof \Requests_Auth)) {
+            trigger_error('Expected an instanceof Requests_Auth',
+                E_USER_ERROR);
+        }
+        $this->_auth = $auth;
+    }
+
+    /**
+     * Clear the auth used for these requests
+     */
+    public function clearAuth()
+    {
+        $this->_auth = null;
+    }
+
+    /**
+     * Build the request url for an {@link \Requests_Auth)
+     * auth type
+     *
+     * @return string
+     */
+    public function buildAuthRequestUrl($url, $method, $params)
+    {
+        if (!isset($this->_auth)) {
+            //TODO trigger error
+            return null;
+        }
+        return $this->_auth->buildRequestUrl($url, $method, $params);
     }
 
     /**
@@ -99,22 +122,7 @@ class Client
         if (is_array($args) && !empty($args)) {
             $path .= '/' . implode('/', $args);
         }
-        return $this->url . $path;
-    }
-
-    /**
-     * Get a api url based on passed url segments
-     *
-     * @param ...
-     */
-    public function getApiUrl()
-    {
-        $path = self::API_PATH;
-        $args = func_get_args();
-        if (is_array($args) && !empty($args)) {
-            $path .= '/' . implode('/', $args);
-        }
-        return $this->url . $path;
+        return $this->_uri->appendPath($path)->toString();
     }
 
     /**
@@ -139,7 +147,7 @@ class Client
      */
     public function get($url, $headers=array(), $options=array())
     {
-        return $this->send($url, self::GET, null, $headers, $options);
+        return $this->send($url, self::GET, /* data */ null, $headers, $options);
     }
 
     /**
@@ -195,8 +203,8 @@ class Client
     public function send($url, $method=self::GET, $data=array(),
         $headers=array(), $options=array())
     {
-        if (isset($this->auth)) {
-            $options['auth'] = $this->auth;
+        if (isset($this->_auth)) {
+            $options['auth'] = $this->_auth;
         }
         try {
             $response = \Requests::request($url, $headers, $data, $method, $options);
