@@ -7,7 +7,8 @@ namespace MediaCore\Auth\OAuth;
  *
  * @category    MediaCore
  * @package     MediaCore\Auth\OAuth\Consumer
- * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc.
+ *              (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
@@ -19,14 +20,14 @@ class Consumer
      *
      * @type string
      */
-    private $key = null;
+    private $_key = null;
 
     /**
      * The consumer secret
      *
      * @type string
      */
-    private $secret = null;
+    private $_secret = null;
 
     /**
      * Constructor
@@ -36,8 +37,8 @@ class Consumer
      */
     public function __construct($key, $secret)
     {
-        $this->key = $key;
-        $this->secret = $secret;
+        $this->_key = $key;
+        $this->_secret = $secret;
     }
 
     /**
@@ -47,7 +48,7 @@ class Consumer
      */
     public function getKey()
     {
-        return $this->key;
+        return $this->_key;
     }
 
     /**
@@ -57,6 +58,6 @@ class Consumer
      */
     public function getSecret()
     {
-        return $this->secret;
+        return $this->_secret;
     }
 }
