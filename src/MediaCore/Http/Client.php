@@ -76,13 +76,15 @@ class Client
     /**
      * Set the auth used for requests
      *
-     * @param Requests_Auth $auth
+     * @param \Requests_Auth $auth
      */
     public function setAuth($auth)
     {
         if (!($auth instanceof \Requests_Auth)) {
-            trigger_error('Expected an instanceof Requests_Auth',
-                E_USER_ERROR);
+            throw new \InvalidArgumentException(sprintf(
+                'Expecting an instance of Requests_Auth, received "%s"',
+                (is_object($auth) ? get_class($auth) : gettype($auth))
+            ));
         }
         $this->_auth = $auth;
     }
@@ -96,16 +98,27 @@ class Client
     }
 
     /**
+     * Get the auth object
+     *
+     * @return \Requests_Auth|null
+     */
+    public function getAuth()
+    {
+        return $this->_auth;
+    }
+
+    /**
      * Build the request url for an {@link \Requests_Auth)
      * auth type
      *
      * @return string
      */
-    public function buildAuthRequestUrl($url, $method, $params)
+    public function buildRequestUrl($url, $method, $params)
     {
         if (!isset($this->_auth)) {
-            //TODO trigger error
-            return null;
+            $uri = clone $this->_uri;
+            $uri->appendParams($params);
+            return $uri->toString();
         }
         return $this->_auth->buildRequestUrl($url, $method, $params);
     }
