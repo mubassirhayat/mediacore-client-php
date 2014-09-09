@@ -41,7 +41,7 @@ class Uri
      */
     public function __construct($url)
     {
-        $this->_uri = new Zend_Uri($url);
+        $this->_uri = new Zend_Uri(rtrim($url, '/'));
         // NOTE: Normalizing a URI includes removing any redundant
         // parent directory or current directory references from the path
         // (e.g. foo/bar/../baz becomes foo/baz), normalizing the scheme
@@ -87,8 +87,36 @@ class Uri
     public function appendPath($path)
     {
         $currPath = $this->_uri->getPath();
-        $currPath .= '/' . trim($path, '/') . '/';
-        $this->_uri->setPath($currPath);
+        $path = $currPath . '/' . $path;
+        $path = $this->normalizePath($path);
+        $this->_uri->setPath($path);
+        return $this;
+    }
+
+    /**
+     * Normalize the path string
+     * NOTE: This will not include a trailing
+     * / (slash)
+     *
+     * @param string $path
+     * @return string
+     */
+    public function normalizePath($path)
+    {
+        $path = '/' . rtrim($path, '/');
+        return preg_replace('/[\/]{2,}/', '/', $path);
+    }
+
+    /**
+     * Set the url path
+     *
+     * @param string $path
+     * @return Uri
+     */
+    public function setPath($path)
+    {
+        $path = $this->normalizePath($path);
+        $this->_uri->setPath($path);
         return $this;
     }
 
@@ -316,7 +344,7 @@ class Uri
      */
     public function toString()
     {
-        return $this->__toString();
+        return $this->_uri->toString();
     }
 
     /**
@@ -326,6 +354,6 @@ class Uri
      */
     public function __toString()
     {
-        return $this->_uri->__toString();
+        return $this->toString();
     }
 }
