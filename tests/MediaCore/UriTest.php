@@ -58,7 +58,19 @@ class UriTest extends \PHPUnit_Framework_TestCase
         $url = 'http://example.com/path/to/directory';
         $uri = new Uri($url);
         $uri->appendPath('/subdirectory');
-        $expectedValue = '/path/to/directory/subdirectory/';
+        $expectedValue = '/path/to/directory/subdirectory';
+        $this->assertEquals($expectedValue, $uri->getPath());
+    }
+
+    /**
+     * @covers MediaCore\Uri::setPath
+     */
+    public function testSetPath()
+    {
+        $url = 'http://example.com/path/to/directory';
+        $uri = new Uri($url);
+        $uri->setPath('/subdirectory');
+        $expectedValue = '/subdirectory';
         $this->assertEquals($expectedValue, $uri->getPath());
     }
 

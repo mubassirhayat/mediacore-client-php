@@ -1,6 +1,8 @@
 <?php
 namespace MediaCore\Http;
 
+use MediaCore\Auth\Lti;
+
 /**
  */
 class ClientTest extends \PHPUnit_Framework_TestCase
@@ -11,25 +13,48 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->baseUrl = 'http://training.mediacore.tv';
-        $this->client = new Client($this->baseUrl);
+        $this->url = 'http://training.mediacore.tv';
+        $this->client = new Client($this->url);
     }
 
     /**
      */
     protected function tearDown()
     {
-        $this->baseUrl = null;
+        $this->url = null;
         $this->client = null;
     }
 
-    /**
-     * @covers MediaCore\Http\Client::getApiUrl
-     */
-    public function testApiUrl()
+    public function testGetUrl()
     {
-        $url = $this->client->getApiUrl('media');
-        $expectedValue = $this->baseUrl . '/api2/media';
+        $url = $this->client->getUrl('api2', 'media');
+        $expectedValue = 'http://training.mediacore.tv/api2/media';
+        $this->assertEquals($expectedValue, $url);
+    }
+
+    public function testSetAndGetAuth()
+    {
+        $auth = new Lti('key', 'secret');
+        $this->client->setAuth($auth);
+        $this->assertInstanceOf('Requests_Auth', $this->client->getAuth());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testInvalidSetAuth()
+    {
+        $auth = new \stdClass();
+        $this->client->setAuth($auth);
+    }
+
+    public function testBuildRequestUrlWithNoAuth()
+    {
+        $params = array(
+            'foo' => 'bar'
+        );
+        $url = $this->client->buildRequestUrl($this->url, 'GET', $params);
+        $expectedValue = 'http://training.mediacore.tv/?foo=bar';
         $this->assertEquals($expectedValue, $url);
     }
 
@@ -38,7 +63,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testGet()
     {
-        $url = $this->client->getApiUrl('media', '2751068');
+        $url = $this->client->getUrl('api2', 'media', '2751068');
         $response = $this->client->get($url);
         $this->assertObjectHasAttribute('id', $response->json);
         $this->assertEquals('2751068', $response->json->id);

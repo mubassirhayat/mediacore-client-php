@@ -6,9 +6,9 @@ namespace MediaCore;
 class LtiTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Lti
+     * @var Auth
      */
-    protected $lti;
+    protected $auth;
 
     /**
      */
@@ -51,7 +51,10 @@ class LtiTest extends \PHPUnit_Framework_TestCase
      */
     public function testBeforeRequest()
     {
-        $url = 'https://localhost:8080';
+        // Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 
     /**
@@ -59,7 +62,10 @@ class LtiTest extends \PHPUnit_Framework_TestCase
      */
     public function buildRquestUrl()
     {
-
+        // Stop here and mark this test as incomplete.
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 
     /**
