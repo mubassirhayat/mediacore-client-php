@@ -120,9 +120,9 @@ class Client
         $path = '';
         $args = func_get_args();
         if (is_array($args) && !empty($args)) {
-            $path .= '/' . implode('/', $args);
+            $path .= '/'. implode('/', $args);
         }
-        return $this->_uri->appendPath($path)->toString();
+        return $this->_uri->setPath($path)->toString();
     }
 
     /**
