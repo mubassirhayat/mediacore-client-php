@@ -7,7 +7,8 @@ namespace MediaCore\Auth;
  * @category    MediaCore
  * @package     MediaCore\Auth\Lti
  * @subpackage
- * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc.
+ *              (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
@@ -67,7 +68,8 @@ class Lti implements \Requests_Auth
      */
     public function register(\Requests_Hooks &$hooks)
     {
-        $hooks->register('requests.before_request', array(&$this, 'beforeRequest'));
+        $hooks->register('requests.before_request',
+            array(&$this, 'beforeRequest'));
     }
 
     /**
