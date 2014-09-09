@@ -8,7 +8,8 @@ namespace MediaCore\Http;
  * @category    MediaCore
  * @package     MediaCore\Http\Response
  * @subpackage
- * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc.
+ *              (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
@@ -89,6 +90,6 @@ class Response
         if (!isset($this->body)) {
             return null;
         }
-        return json_decode($this->body, /* assoc */ false);
+        return json_decode($this->body);
     }
 }
