@@ -8,7 +8,8 @@ namespace MediaCore\Auth\OAuth\SignatureMethod;
  * @category    MediaCore
  * @package     MediaCore\Auth\OAuth\SignatureMethod\SignatureMethodInterface
  * @subpackage
- * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc.
+ *              (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php

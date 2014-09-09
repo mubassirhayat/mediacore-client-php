@@ -11,7 +11,8 @@ use MediaCore\Auth\OAuth\SignatureMethod\SignatureMethodInterface;
  * @category    MediaCore
  * @package     MediaCore\Auth\OAuth\SignatureMethod\HMAC_SHA1
  * @subpackage
- * @copyright   Copyright (c) 2014 MediaCore Technologies Inc. (http://www.mediacore.com)
+ * @copyright   Copyright (c) 2014 MediaCore Technologies Inc.
+ *              (http://www.mediacore.com)
  * @license
  * @version     Release:
  * @link        https://github.com/mediacore/mediacore-client-php
