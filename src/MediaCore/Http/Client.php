@@ -67,7 +67,7 @@ class Client
      */
     public function __construct($url, $auth=null)
     {
-        $this->_uri = new Uri($url);
+        $this->_uri = new Uri(rtrim($url, '/'));
         if (isset($auth) && $auth instanceof \Requests_Auth) {
             $this->_auth = $auth;
         }
