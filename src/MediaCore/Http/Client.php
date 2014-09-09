@@ -108,22 +108,6 @@ class Client
     }
 
     /**
-     * Build the request url for an {@link \Requests_Auth)
-     * auth type
-     *
-     * @return string
-     */
-    public function buildRequestUrl($url, $method, $params)
-    {
-        if (!isset($this->_auth)) {
-            $uri = clone $this->_uri;
-            $uri->appendParams($params);
-            return $uri->toString();
-        }
-        return $this->_auth->buildRequestUrl($url, $method, $params);
-    }
-
-    /**
      * Get a url based on passed url segments
      *
      * @param ...
