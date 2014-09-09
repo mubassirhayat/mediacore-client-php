@@ -48,16 +48,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->client->setAuth($auth);
     }
 
-    public function testBuildRequestUrlWithNoAuth()
-    {
-        $params = array(
-            'foo' => 'bar'
-        );
-        $url = $this->client->buildRequestUrl($this->url, 'GET', $params);
-        $expectedValue = 'http://training.mediacore.tv/?foo=bar';
-        $this->assertEquals($expectedValue, $url);
-    }
-
     /**
      * @covers MediaCore\Http\Client::get
      */
