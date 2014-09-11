@@ -2,6 +2,7 @@
 namespace MediaCore\Http;
 
 use MediaCore\Uri;
+use MediaCore\Exception;
 
 /**
  * A basic HTTP client that uses Requests_Request
@@ -81,7 +82,7 @@ class Client
     public function setAuth($auth)
     {
         if (!($auth instanceof \Requests_Auth)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new Exception(sprintf(
                 'Expecting an instance of Requests_Auth, received "%s"',
                 (is_object($auth) ? get_class($auth) : gettype($auth))
             ));
@@ -207,7 +208,7 @@ class Client
             $response = \Requests::request($url, $headers, $data, $method, $options);
             return new Response($response);
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new Exception($e->getMessage(), $e->getCode());
         }
     }
 }
