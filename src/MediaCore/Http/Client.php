@@ -116,7 +116,7 @@ class Client
     public function getUrl()
     {
         $path = '';
-        $args = func_get_args();
+        $args = array_filter(func_get_args());
         if (is_array($args) && !empty($args)) {
             $path .= '/'. implode('/', $args);
         }
