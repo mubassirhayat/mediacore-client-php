@@ -95,7 +95,7 @@ class Uri
 
     /**
      * Normalize the path string
-     * NOTE: This will not include a trailing
+     * NOTE: This will always omit the trailing
      * / (slash)
      *
      * @param string $path
@@ -104,6 +104,8 @@ class Uri
     public function normalizePath($path)
     {
         $path = '/' . rtrim($path, '/');
+        // replace any 2 or more forward slashes
+        // with a single forward slash
         return preg_replace('/[\/]{2,}/', '/', $path);
     }
 
