@@ -40,7 +40,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \InvalidArgumentException
+     * @expectedException Exception
      */
     public function testInvalidSetAuth()
     {
@@ -55,6 +55,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $url = $this->client->getUrl('api2', 'media', '2751068');
         $response = $this->client->get($url);
+        $contentType = $response->getHeader('content-type');
+        $this->assertEquals('application/json; charset=utf-8', $contentType);
         $this->assertObjectHasAttribute('id', $response->json);
         $this->assertEquals('2751068', $response->json->id);
     }
