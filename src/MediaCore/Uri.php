@@ -346,7 +346,13 @@ class Uri
      */
     public function isValid()
     {
-        return $this->_uri->isValid();
+        if (!$this->_uri->getScheme()) {
+            return false;
+        }
+        if (!$this->_uri->getHost()) {
+            return false;
+        }
+        return true;
     }
 
     /**
