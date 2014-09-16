@@ -120,7 +120,8 @@ class Client
         if (is_array($args) && !empty($args)) {
             $path .= '/'. implode('/', $args);
         }
-        return $this->_uri->setPath($path)->toString();
+        $uri = clone $this->_uri;
+        return $uri->setPath($path)->toString();
     }
 
     /**
