@@ -340,6 +340,16 @@ class Uri
     }
 
     /**
+     * Validate the URL
+     *
+     * @return boolean
+     */
+    public function isValid()
+    {
+        return $this->_uri->isValid();
+    }
+
+    /**
      * Compose the URI into a string
      *
      * @return string
