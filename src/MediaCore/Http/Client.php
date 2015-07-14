@@ -187,7 +187,7 @@ class Client
      */
     public function delete($url, $headers=array(), $options=array())
     {
-        return $this->send($url, self::DELETE, null, $headers, $options);
+        return $this->send($url, self::DELETE, /* data */ null, $headers, $options);
     }
 
     /**
