@@ -61,7 +61,7 @@ class Request
         $this->_queryParams = $this->_uri->getQueryAsArray(/* encoded */ false);
         $this->_uri->setQuery('');
 
-        $this->_oAuthParams = $this->_getOAuthParams();
+        $this->_OAuthParams = $this->_getOAuthParams();
         $this->_params = $params;
     }
 
@@ -74,7 +74,7 @@ class Request
      */
     public function signRequest($signatureMethod)
     {
-        $this->_oAuthParams['oauth_signature_method'] = $signatureMethod->getName();
+        $this->_OAuthParams['oauth_signature_method'] = $signatureMethod->getName();
         $signature = $signatureMethod->buildSignature(
             $this->_consumer, $this->_getBaseString());
         $uri = clone $this->_uri;
@@ -126,9 +126,9 @@ class Request
      */
     private function _concatQueryParams() {
         return \MediaCore\Uri::buildQuery(
+            $this->_params,
             $this->_queryParams,
-            $this->_oAuthParams,
-            $this->_params
+            $this->_OAuthParams
         );
     }
 
