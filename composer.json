@@ -25,5 +25,10 @@
 		"apigen/apigen": "2.8.0",
 		"phpunit/phpunit": ">=4.1",
 		"psy/psysh": "~0.1"
+	},
+	"autoload": {
+		"psr-0": {
+			"MediaCore": "src/"
+		}
 	}
 }
