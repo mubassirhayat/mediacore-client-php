@@ -4,7 +4,7 @@
 	"keywords": ["mediacore","php"],
 	"homepage": "https://github.com/mediacore/mediacore-client-php",
 	"type": "library",
-	"license": "proprietary",
+	"license": "Apache-2.0",
 	"authors": [
 		{
 			"name": "MediaCore",
